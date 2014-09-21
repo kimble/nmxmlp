@@ -4,6 +4,7 @@ No more xml please! (nmxmlp)
 This mini project was born of a frustrated hate of XML, JAXB, XJC, bindings, namespaces and the number of ways these technologies
 makes it insanely difficult and time consuming to debug problems...
 
+[![Build Status](https://drone.io/github.com/kimble/nmxmlp/status.png)](https://drone.io/github.com/kimble/nmxmlp/latest)
 
 
 Design goals
