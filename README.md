@@ -2,7 +2,7 @@ No more xml please! (nmxmlp)
 ============================
 
 This mini project was born out of a frustrated hate of XML, JAXB, XJC, bindings, namespaces, code generation, xpath factories
-and the ironically named simple NamespaceContextClass. Not to mention all the possible ways these technologies makes it 
+and the ironically named SimpleNamespaceContext class. Not to mention all the possible ways these technologies makes it 
 insanely difficult and time consuming to debug problems... 
 
 I don't want to deal with xpath factories, namespace contexts, compilation of xpath expressions or any of those things!
