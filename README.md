@@ -6,9 +6,10 @@ and the ironically named SimpleNamespaceContext class. Not to mention all the po
 insanely difficult and time consuming to debug problems... 
 
 I don't want to deal with xpath factories, namespace contexts, compilation of xpath expressions or any of those things!
-I'm pretty sure that they're designed by the devil and I want nothing to with either of them.  All I wanted was a simple 
-way to extract some data from a small-ish sized xml document. Not too much to ask for right? None of the existing Java XML 
-libraries seems to be able to do this in a convenient and straight forward way so I created this very non-enterprisy API for just this. 
+I'm pretty sure that they're designed by the devil and I want nothing to with any of them.  All I want is a simple 
+way to extract and updated data in small-ish XML documents. Not too much to ask for right? None of the existing Java XML 
+libraries seems to be able to do this in a convenient, reliable and straight forward way so I created this very 
+non-enterprisy API for just this. 
  
 [![Build Status](https://drone.io/github.com/kimble/nmxmlp/status.png)](https://drone.io/github.com/kimble/nmxmlp/latest)
 
