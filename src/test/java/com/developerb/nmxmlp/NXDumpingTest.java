@@ -29,7 +29,7 @@ public class NXDumpingTest {
         NX nx = new NX(DUMP_WITHOUT_XML_DECLARATION);
         NX.Cursor root = nx.from(xml);
 
-        assertEquals("<a><b><c>value</c></b></a>", root.dump());
+        assertEquals("<a><b><c>value</c></b></a>", root.dumpXml());
     }
 
     @Test
@@ -37,7 +37,7 @@ public class NXDumpingTest {
         NX nx = new NX(DUMP_WITHOUT_XML_DECLARATION);
         NX.Cursor root = nx.from(xml);
 
-        assertEquals("<b><c>value</c></b>", root.to("b").dump());
+        assertEquals("<b><c>value</c></b>", root.to("b").dumpXml());
     }
 
     @Test
@@ -45,7 +45,7 @@ public class NXDumpingTest {
         NX nx = new NX();
         NX.Cursor root = nx.from(xml);
 
-        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><a><b><c>value</c></b></a>", root.dump());
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><a><b><c>value</c></b></a>", root.dumpXml());
     }
 
 }

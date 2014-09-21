@@ -114,7 +114,7 @@ public class NXNavigationTest {
         NX.Cursor missingNode = message.to("header").toOptional("no-such-node");
 
         try {
-            missingNode.dump();
+            missingNode.dumpXml();
             fail("Dumping xml from a missing node doesn't make sense");
         }
         catch (UnsupportedOperationException ex) {

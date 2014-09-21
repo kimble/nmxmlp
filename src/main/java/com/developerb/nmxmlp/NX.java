@@ -22,6 +22,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteSource;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -101,8 +102,6 @@ public class NX {
 
         Cursor to(String firstName, String... remainingNames) throws Ex;
 
-        Cursor update(String tagName, String updatedValue) throws Ex;
-
         Cursor toOptional(String needle) throws Ex;
 
         Cursor to(String tagName) throws Ex;
@@ -125,21 +124,60 @@ public class NX {
 
         Cursor text(String updatedText);
 
-        String dump() throws Ex;
+        String dumpXml() throws Ex;
 
         Integer integer();
+
+        Attribute attr(String name) throws Ambiguous, MissingNode;
+
+        Attribute optionalAttr(String name) throws Ambiguous;
+
+    }
+
+    public static interface Attribute {
+
+        String text();
+
+        void text(String text);
+
+    }
+
+    public static class RealAttribute implements Attribute {
+
+        private final Node node;
+
+        public RealAttribute(Node node) {
+            this.node = node;
+        }
+
+        @Override
+        public String text() {
+            return node.getTextContent();
+        }
+
+        @Override
+        public void text(String text) {
+            node.setTextContent(text);
+        }
+
+    }
+
+    public static class MissingAttribute implements Attribute {
+
+        @Override
+        public String text() { return null; }
+
+        @Override
+        public void text(String text) { }
 
     }
 
 
-    public class EmptyCursor implements Cursor {
 
+    public class EmptyCursor implements Cursor {
 
         @Override
         public Cursor to(String firstName, String... remainingNames) throws Ex { return this; }
-
-        @Override
-        public Cursor update(String tagName, String updatedValue) throws Ex { return this; }
 
         @Override
         public Cursor toOptional(String needle) throws Ex { return this; }
@@ -179,13 +217,23 @@ public class NX {
         }
 
         @Override
-        public String dump() throws Ex {
+        public String dumpXml() throws Ex {
             throw new UnsupportedOperationException("Can't dump empty cursor");
         }
 
         @Override
         public Integer integer() {
             return null;
+        }
+
+        @Override
+        public Attribute attr(String name) {
+            return new MissingAttribute();
+        }
+
+        @Override
+        public Attribute optionalAttr(String name) {
+            return new MissingAttribute();
         }
 
     }
@@ -219,12 +267,6 @@ public class NX {
             }
 
             return cursor;
-        }
-
-        @Override
-        public Cursor update(String tagName, String updatedValue) throws Ex {
-            to(tagName).text(updatedValue);
-            return this;
         }
 
         @Override
@@ -346,6 +388,51 @@ public class NX {
         }
 
         @Override
+        public Attribute attr(String needle) throws Ambiguous, MissingNode {
+            final Optional<Node> attribute = findAttribute(needle);
+
+            if (attribute.isPresent()) {
+                return new RealAttribute(attribute.get());
+            }
+            else {
+                throw new MissingNode(this, needle, node.getAttributes());
+            }
+        }
+
+        @Override
+        public Attribute optionalAttr(String needle) throws Ambiguous {
+            final Optional<Node> attribute = findAttribute(needle);
+
+            if (attribute.isPresent()) {
+                return new RealAttribute(attribute.get());
+            }
+            else {
+                return new MissingAttribute();
+            }
+        }
+
+        private Optional<Node> findAttribute(String needle) throws Ambiguous {
+            NamedNodeMap attributes = node.getAttributes();
+            Node found = null;
+
+            for (int i=0; i<attributes.getLength(); i++) {
+                final Node attribute = attributes.item(i);
+                final String localName = attribute.getLocalName();
+
+                if (localName.equalsIgnoreCase(needle)) {
+                    if (found != null) {
+                        throw new Ambiguous(this, needle);
+                    }
+                    else {
+                        found = attribute;
+                    }
+                }
+            }
+
+            return Optional.fromNullable(found);
+        }
+
+        @Override
         public boolean hasText() {
             return isNotBlank(text());
         }
@@ -405,7 +492,7 @@ public class NX {
         }
 
         @Override
-        public String dump() throws Ex {
+        public String dumpXml() throws Ex {
             try {
                 StringWriter sw = new StringWriter();
                 transformer.transform(new DOMSource(node), new StreamResult(sw));
@@ -446,6 +533,21 @@ public class NX {
             super(cursor, "Unable to find '" + needle + "'");
         }
 
+        public MissingNode(NodeCursor cursor, String needle, NamedNodeMap attributes) {
+            super(cursor, "Unable to find attribute named '" + needle + "' - Did you mean: " + summarize(attributes) + "?");
+        }
+
+        private static String summarize(NamedNodeMap attributes) {
+            final Set<String> names = Sets.newTreeSet();
+            for (int i=0; i<attributes.getLength(); i++) {
+                names.add(attributes.item(i).getLocalName());
+            }
+
+            return Joiner.on(", ")
+                    .skipNulls()
+                    .join(names);
+        }
+
         private static String summarize(NodeList childNodes) {
             final Set<String> names = Sets.newTreeSet();
             for (int i=0; i<childNodes.getLength(); i++) {
@@ -455,7 +557,9 @@ public class NX {
                 }
             }
 
-            return Joiner.on(", ").join(names);
+            return Joiner.on(", ")
+                    .skipNulls()
+                    .join(names);
         }
     }
 
