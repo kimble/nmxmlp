@@ -12,6 +12,7 @@ libraries seems to be able to do this in a convenient, reliable and straight for
 non-enterprisy API for just this. 
  
 [![Build Status](https://drone.io/github.com/kimble/nmxmlp/status.png)](https://drone.io/github.com/kimble/nmxmlp/latest)
+[![Download](https://api.bintray.com/packages/kim-betti/maven/nmxmlp/images/download.png) ](https://bintray.com/kim-betti/maven/nmxmlp/_latestVersion)
 
 
 Design goals - In order of importance

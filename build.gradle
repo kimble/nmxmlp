@@ -13,8 +13,8 @@ apply plugin: "java"
 
 
 
-group = 'com.developerb.nmxlp'
-version = '0.2'
+group = 'com.developerb.nmxmlp'
+version = '0.3'
 
 
 repositories {
