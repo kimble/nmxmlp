@@ -46,3 +46,13 @@ Have a look at the test cases for more examples
         NX.Cursor reloaded = nx.from(person.dumpXml());
         assertEquals("Mikke Mus", reloaded.to("name").text());
     }
+    
+Roadmap
+-------
+This library has already solved my problem so I may never get around to improve it, but if I do, 
+here is a list of things that I'd like to look into. 
+
+1. Reduce the number of methods in the `NX.Cursor` interface.
+2. Improve the API dealing with "optional" nodes and the associated dummy implementations of `NX.Cursor` and `NX.Attribute`.
+3. Overall I'm quite happy with the API, but it could probably be improved in a number of area.  
+4. Increase test coverage. 
