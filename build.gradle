@@ -1,0 +1,83 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.5'
+    }
+}
+
+apply plugin: "com.jfrog.bintray"
+apply plugin: "maven-publish"
+apply plugin: "java"
+
+
+
+group = 'com.developerb.nmxlp'
+version = '0.1'
+
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'com.google.guava:guava:18.0',
+            'org.apache.commons:commons-lang3:3.1'
+
+    testCompile 'junit:junit:4.11',
+                'org.assertj:assertj-core:1.6.1'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar, javadocJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar {
+                classifier "sources"
+            }
+
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+        }
+    }
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayKey
+
+    publications = [ 'mavenJava' ] // see publications closure
+
+    pkg { //package will be created if does not exist
+        repo = 'maven'
+        name = 'nmxmlp'
+        desc = 'Simple Java-library for extracting and updating small-ish xml documents'
+
+        websiteUrl = 'https://github.com/kimble/nmxmlp'
+        issueTrackerUrl = 'https://github.com/kimble/nmxmlp/issues'
+        vcsUrl = 'https://github.com/kimble/nmxmlp.git'
+
+        licenses = ['Apache-2.0']
+        labels = ['java', 'xml', 'library']
+
+        publicDownloadNumbers = true
+    }
+}
+
