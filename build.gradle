@@ -13,9 +13,11 @@ apply plugin: "java"
 
 
 
-group = 'com.developerb.nmxmlp'
-version = '0.3'
+group = 'com.developerb.nmxlp' // Yeah I know about the typo, but hard to change now that it's in JCenter..
+version = '0.4'
 
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
 
 repositories {
     jcenter()

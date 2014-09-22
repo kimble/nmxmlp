@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.stripToEmpty;
 
 /**
  * @author Kim A. Betti
@@ -82,12 +83,23 @@ public class NX {
     }
 
     public Cursor from(ByteSource source) throws Ex {
-        try (InputStream stream = source.openStream()) {
+        InputStream stream = null;
+
+        try {
+            stream = source.openStream();
             final Document document = docBuilder.parse(stream);
             return new NodeCursor(document.getDocumentElement());
         }
         catch (Exception ex) {
             throw new Ex("Failed to initialize xml cursor", ex);
+        }
+        finally {
+            try {
+                if (stream != null) {
+                    stream.close();
+                }
+            }
+            catch (IOException ignored) { }
         }
     }
 

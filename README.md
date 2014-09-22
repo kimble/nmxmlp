@@ -31,7 +31,7 @@ Constraints
 This will never be efficient on large documents. 
 All I wanted was a convenient API for extracting and updating data in small documents.
 
-It requires Java 7 and depends on Guava and Commons-Lang3. These dependencies should be easy enough to get rid of if really don't 
+It requires Java 6 and depends on Guava and Commons-Lang3. These dependencies should be easy enough to get rid of if really don't 
 want them, but in my mind they're just a part of the JDK. 
 
 Teaser
