@@ -41,9 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.stripToEmpty;
-
 /**
  * @author Kim A. Betti
  */
@@ -110,6 +107,16 @@ public class NX {
 
     }
 
+    public static interface Inserter<R> {
+
+        void insert(Cursor cursor, R input) throws Ex;
+
+    }
+
+    /**
+     * This is the main concept in this API. It's basically a convenient wrapper around
+     * a node is a xml document. The cursor can be used to navigate, extract and insert data.
+     */
     public interface Cursor {
 
         Cursor to(String firstName, String... remainingNames) throws Ex;
@@ -126,8 +133,6 @@ public class NX {
 
         <R> List<R> extractCollection(String needle, Extractor<R> extractor) throws Ex;
 
-        boolean hasText();
-
         String text();
 
         String describePath();
@@ -143,6 +148,8 @@ public class NX {
         Attribute attr(String name) throws Ambiguous, MissingNode;
 
         Attribute optionalAttr(String name) throws Ambiguous;
+
+        <R> void insertCollection(String prototypeName, Iterable<R> input, Inserter<R> inserter) throws Ex;
 
     }
 
@@ -212,9 +219,6 @@ public class NX {
         }
 
         @Override
-        public boolean hasText() { return false; }
-
-        @Override
         public String text() { return null; }
 
         @Override
@@ -246,6 +250,11 @@ public class NX {
         @Override
         public Attribute optionalAttr(String name) {
             return new MissingAttribute();
+        }
+
+        @Override
+        public <R> void insertCollection(String prototype, Iterable<R> people, Inserter<R> inserter) throws Ex {
+            throw new UnsupportedOperationException("Can't insert collection in empty cursor");
         }
 
     }
@@ -399,6 +408,32 @@ public class NX {
             return result;
         }
 
+
+
+
+        @Override
+        public <I> void insertCollection(String prototypeName, Iterable<I> inputCollection, Inserter<I> inserter) throws Ex {
+            Optional<Node> prototypeNode = findSingleNode(prototypeName);
+
+            if (prototypeNode.isPresent()) {
+                Node originalPrototype = prototypeNode.get();
+                Node prototype = originalPrototype.cloneNode(true);
+                node.removeChild(originalPrototype);
+
+                int count = 0;
+                for (I input : inputCollection) {
+                    Node inputNode = prototype.cloneNode(true);
+                    Cursor inputCursor = new NodeCursor(newAncestorList(), inputNode, count++);
+                    inserter.insert(inputCursor, input);
+
+                    node.appendChild(inputNode);
+                }
+            }
+            else {
+                throw new MissingNode(this, "Expected a node named " + prototypeName + " to be used as a prototype");
+            }
+        }
+
         @Override
         public Attribute attr(String needle) throws Ambiguous, MissingNode {
             final Optional<Node> attribute = findAttribute(needle);
@@ -442,11 +477,6 @@ public class NX {
             }
 
             return Optional.fromNullable(found);
-        }
-
-        @Override
-        public boolean hasText() {
-            return isNotBlank(text());
         }
 
         @Override
