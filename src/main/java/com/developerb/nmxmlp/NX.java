@@ -149,7 +149,26 @@ public class NX {
 
         Attribute optionalAttr(String name) throws Ambiguous;
 
+        /**
+         * This method will expect the xml to contain a single node that will be used
+         * as a prototype when inserting data from the collection.
+         *
+         * I've found this to be useful when building soap requests with repeatable
+         * elements.
+         *
+         * @param prototypeName name of the node to be used as a prototype.
+         * @param input collection to be inserted
+         * @param inserter will be called once for every element in the collection
+         */
         <R> void insertCollection(String prototypeName, Iterable<R> input, Inserter<R> inserter) throws Ex;
+
+        /**
+         * Update a single node
+         *
+         * @param payload to be inserted into a node
+         * @param inserter that'll update the node based on the payload content
+         */
+        <R> void update(R payload, Inserter<R> inserter) throws Ex;
 
     }
 
@@ -255,6 +274,11 @@ public class NX {
         @Override
         public <R> void insertCollection(String prototype, Iterable<R> people, Inserter<R> inserter) throws Ex {
             throw new UnsupportedOperationException("Can't insert collection in empty cursor");
+        }
+
+        @Override
+        public <R> void update(R payload, Inserter<R> inserter) {
+            throw new UnsupportedOperationException("Can't insert in empty cursor");
         }
 
     }
@@ -432,6 +456,11 @@ public class NX {
             else {
                 throw new MissingNode(this, "Expected a node named " + prototypeName + " to be used as a prototype");
             }
+        }
+
+        @Override
+        public <R> void update(R payload, Inserter<R> inserter) throws Ex {
+            inserter.insert(this, payload);
         }
 
         @Override

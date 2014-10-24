@@ -74,7 +74,44 @@ public class NXInsertTest {
                 .contains("<svg:circle cx=\"70\" cy=\"120\" fill=\"red\" r=\"30\"/>");
     }
 
+    @Test
+    public void updateSingleNodeTreeFromObject() throws Exception {
+        URL soapRequestResource = Resources.getResource("soap/soap-request.xml");
+        ByteSource soapRequestSource = Resources.asByteSource(soapRequestResource);
 
+        NX nx = new NX();
+        NX.Cursor soapEnvelope = nx.from(soapRequestSource);
+
+        NX.Cursor requestHeader = soapEnvelope.to("header", "requestHeader");
+        RequestHeader someHeader = new RequestHeader("n-code", "app-name");
+        requestHeader.update(someHeader, new SoapRequestHeaderInserter());
+
+        NX.Cursor reloadedSoapEnvelope = nx.from(soapEnvelope.dumpXml());
+        assertEquals("n-code", reloadedSoapEnvelope.to("header", "requestHeader", "networkCode").text());
+        assertEquals("app-name", reloadedSoapEnvelope.to("header", "requestHeader", "applicationName").text());
+    }
+
+    static class RequestHeader {
+
+        public final String networkCode;
+        public final String applicationName;
+
+        RequestHeader(String networkCode, String applicationName) {
+            this.networkCode = networkCode;
+            this.applicationName = applicationName;
+        }
+
+    }
+
+    static class SoapRequestHeaderInserter implements NX.Inserter<RequestHeader> {
+
+        @Override
+        public void insert(NX.Cursor cursor, RequestHeader input) throws NX.Ex {
+            cursor.to("applicationName").text(input.applicationName);
+            cursor.to("networkCode").text(input.networkCode);
+        }
+
+    }
 
 
     static class Circle {
