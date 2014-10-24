@@ -91,6 +91,33 @@ public class NXNavigationTest {
     }
 
     @Test
+    public void deepNavigationWithOptionalNodesOneMissing() throws Exception {
+        NX nx = new NX();
+        NX.Cursor message = nx.from(messageXml);
+        NX.Cursor missingNode = message.toOptional("header", "no-such-node");
+
+        assertNull(missingNode.text());
+    }
+
+    @Test
+    public void deepNavigationWithOptionalNodesBothMissing() throws Exception {
+        NX nx = new NX();
+        NX.Cursor message = nx.from(messageXml);
+        NX.Cursor missingNode = message.toOptional("no-such-node", "another-missing-node");
+
+        assertNull(missingNode.text());
+    }
+
+    @Test
+    public void deepNavigationWithOptionalNodesBothExisting() throws Exception {
+        NX nx = new NX();
+        NX.Cursor message = nx.from(messageXml);
+        NX.Cursor existingNode = message.toOptional("header", "id");
+
+        assertEquals("id-123", existingNode.text());
+    }
+
+    @Test
     public void describingThePathToAMissingNodeDoesntMakeSense() throws Exception {
         NX nx = new NX();
         NX.Cursor message = nx.from(messageXml);

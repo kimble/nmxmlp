@@ -145,7 +145,7 @@ public class NX {
 
         Cursor to(String firstName, String... remainingNames) throws Ex;
 
-        Cursor toOptional(String needle) throws Ex;
+        Cursor toOptional(String firstNeedle, String... remainingNeedles) throws Ex;
 
         Cursor to(int position, String tagName) throws MissingNode;
 
@@ -238,7 +238,7 @@ public class NX {
         public Cursor to(String firstName, String... remainingNames) throws Ex { return this; }
 
         @Override
-        public Cursor toOptional(String needle) throws Ex { return this; }
+        public Cursor toOptional(String firstNeedle, String... reamainingNeedles) throws Ex { return this; }
 
         @Override
         public Cursor to(int position, String tagName) throws MissingNode { return this; }
@@ -326,17 +326,22 @@ public class NX {
             return cursor;
         }
 
-        @Override
-        public Cursor toOptional(String needle) throws Ex {
-            final Optional<Node> result = findSingleNode(needle);
 
-            if (result.isPresent()) {
-                return to(needle);
+        @Override
+        public Cursor toOptional(String firstNeedle, String... remainingNeedles) throws Ex {
+            Optional<Node> result = findSingleNode(firstNeedle);
+            Cursor cursor = result.isPresent()
+                    ? to(firstNeedle)
+                    : new EmptyCursor();
+
+            for (String remainingNeedle : remainingNeedles) {
+                cursor = cursor.toOptional(remainingNeedle);
             }
-            else {
-                return new EmptyCursor();
-            }
+
+            return cursor;
         }
+
+
 
         private NodeCursor to(String tagName) throws Ex {
             final Optional<Node> found = findSingleNode(tagName);
