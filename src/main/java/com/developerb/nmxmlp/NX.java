@@ -165,7 +165,7 @@ public class NX {
 
         String dumpXml() throws Ex;
 
-        Attribute attr(String name) throws Ambiguous, MissingNode;
+        Attribute attr(String name) throws Ambiguous, MissingAttribute;
 
         Attribute optionalAttr(String name) throws Ambiguous;
 
@@ -220,7 +220,7 @@ public class NX {
 
     }
 
-    public static class MissingAttribute implements Attribute {
+    public static class NullAttribute implements Attribute {
 
         @Override
         public String text() { return null; }
@@ -275,12 +275,12 @@ public class NX {
 
         @Override
         public Attribute attr(String name) {
-            return new MissingAttribute();
+            return new NullAttribute();
         }
 
         @Override
         public Attribute optionalAttr(String name) {
-            return new MissingAttribute();
+            return new NullAttribute();
         }
 
         @Override
@@ -475,14 +475,14 @@ public class NX {
         }
 
         @Override
-        public Attribute attr(String needle) throws Ambiguous, MissingNode {
+        public Attribute attr(String needle) throws Ambiguous, MissingAttribute {
             final Optional<Node> attribute = findAttribute(needle);
 
             if (attribute.isPresent()) {
                 return new RealAttribute(attribute.get());
             }
             else {
-                throw new MissingNode(this, needle, node.getAttributes());
+                throw new MissingAttribute(this, needle);
             }
         }
 
@@ -494,7 +494,7 @@ public class NX {
                 return new RealAttribute(attribute.get());
             }
             else {
-                return new MissingAttribute();
+                return new NullAttribute();
             }
         }
 
@@ -600,6 +600,13 @@ public class NX {
 
     }
 
+    public static class MissingAttribute extends Ex {
+
+        MissingAttribute(Cursor cursor, String attributeName) {
+            super(cursor, "Unable to find attribute named '" + attributeName + "'");
+        }
+
+    }
 
     public static class MissingNode extends Ex {
         MissingNode(Cursor cursor, String needle, NodeList childNodes) {
