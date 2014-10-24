@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ *
  * @author Kim A. Betti
  */
 public class NX {
@@ -113,6 +114,29 @@ public class NX {
 
     }
 
+    public static Extractor<Integer> asInteger() {
+        return new Extractor<Integer>() {
+
+            @Override
+            public Integer transform(NodeCursor cursor) throws Ex {
+                return Integer.parseInt(cursor.text());
+            }
+
+        };
+    }
+
+    public static Extractor<Double> asDouble() {
+        return new Extractor<Double>() {
+
+            @Override
+            public Double transform(NodeCursor cursor) throws Ex {
+                return Double.parseDouble(cursor.text());
+            }
+
+        };
+    }
+
+
     /**
      * This is the main concept in this API. It's basically a convenient wrapper around
      * a node is a xml document. The cursor can be used to navigate, extract and insert data.
@@ -122,8 +146,6 @@ public class NX {
         Cursor to(String firstName, String... remainingNames) throws Ex;
 
         Cursor toOptional(String needle) throws Ex;
-
-        Cursor to(String tagName) throws Ex;
 
         Cursor to(int position, String tagName) throws MissingNode;
 
@@ -142,8 +164,6 @@ public class NX {
         Cursor text(String updatedText);
 
         String dumpXml() throws Ex;
-
-        Integer integer();
 
         Attribute attr(String name) throws Ambiguous, MissingNode;
 
@@ -221,9 +241,6 @@ public class NX {
         public Cursor toOptional(String needle) throws Ex { return this; }
 
         @Override
-        public Cursor to(String tagName) throws Ex { return this; }
-
-        @Override
         public Cursor to(int position, String tagName) throws MissingNode { return this; }
 
         @Override
@@ -254,11 +271,6 @@ public class NX {
         @Override
         public String dumpXml() throws Ex {
             throw new UnsupportedOperationException("Can't dump empty cursor");
-        }
-
-        @Override
-        public Integer integer() {
-            return null;
         }
 
         @Override
@@ -326,8 +338,7 @@ public class NX {
             }
         }
 
-        @Override
-        public NodeCursor to(String tagName) throws Ex {
+        private NodeCursor to(String tagName) throws Ex {
             final Optional<Node> found = findSingleNode(tagName);
 
             if (found.isPresent()) {
@@ -506,11 +517,6 @@ public class NX {
             }
 
             return Optional.fromNullable(found);
-        }
-
-        @Override
-        public Integer integer() {
-            return Integer.parseInt(text());
         }
 
         @Override

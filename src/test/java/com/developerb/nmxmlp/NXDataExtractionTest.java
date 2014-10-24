@@ -41,7 +41,15 @@ public class NXDataExtractionTest {
         NX.Cursor person = nx.from(personXml);
 
         assertEquals("Nasse Nøff", person.to("name").text());
-        assertEquals(5, (int) person.to("age").integer());
+        assertEquals(5, (int) person.to("age").extract(NX.asInteger()));
+    }
+
+    @Test
+    public void extractDouble() throws Exception {
+        NX nx = new NX();
+        NX.Cursor root = nx.from("<root><double>3.14159265</double></root>");
+
+        assertEquals(Math.PI, root.extract(NX.asDouble()), 0.00001);
     }
 
     @Test
@@ -115,7 +123,7 @@ public class NXDataExtractionTest {
         public Person transform(NX.NodeCursor cursor) throws NX.Ex {
             return new Person (
                     cursor.to("name").text(),
-                    cursor.to("age").integer()
+                    cursor.to("age").extract(NX.asInteger())
             );
         }
 
