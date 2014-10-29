@@ -453,21 +453,22 @@ public class NX {
 
         @Override
         public <I> void insertCollection(String prototypeName, Iterable<I> inputCollection, Inserter<I> inserter) throws Ex {
-            Optional<Node> prototypeNode = findSingleNode(prototypeName);
+            final Optional<Node> prototypeNode = findSingleNode(prototypeName);
 
             if (prototypeNode.isPresent()) {
                 Node originalPrototype = prototypeNode.get();
                 Node prototype = originalPrototype.cloneNode(true);
-                node.removeChild(originalPrototype);
 
                 int count = 0;
                 for (I input : inputCollection) {
-                    Node inputNode = prototype.cloneNode(true);
-                    Cursor inputCursor = new NodeCursor(newAncestorList(), inputNode, count++);
+                    final Node inputNode = prototype.cloneNode(true);
+                    final Cursor inputCursor = new NodeCursor(newAncestorList(), inputNode, count++);
                     inserter.insert(inputCursor, input);
 
-                    node.appendChild(inputNode);
+                    node.insertBefore(inputNode, originalPrototype);
                 }
+
+                node.removeChild(originalPrototype);
             }
             else {
                 throw new MissingNode(this, "Expected a node named " + prototypeName + " to be used as a prototype");

@@ -91,6 +91,27 @@ public class NXInsertTest {
         assertEquals("app-name", reloadedSoapEnvelope.to("header", "requestHeader", "applicationName").text());
     }
 
+
+    @Test
+    public void insertedElementsInConnectionShouldBePositionedInTheSamePlaceAsThePrototypeElement() throws NX.Ex {
+        NX nx = new NX();
+        NX.Cursor root = nx.from("<root><repeatMe /><fixed>should-not-move</fixed></root>");
+
+        root.insertCollection("repeatMe", Arrays.asList("hei", "på", "deg"), new NX.Inserter<String>() {
+
+            @Override
+            public void insert(NX.Cursor cursor, String input) throws NX.Ex {
+                cursor.text(input);
+            }
+
+        });
+
+        String xml = root.dumpXml();
+        assertThat(xml)
+            .as("Generated XML")
+            .contains("<root><repeatMe");
+    }
+
     static class RequestHeader {
 
         public final String networkCode;
