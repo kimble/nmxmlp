@@ -26,8 +26,8 @@ repositories {
 dependencies {
     compile 'com.google.guava:guava:18.0'
 
-    testCompile 'junit:junit:4.11',
-                'org.assertj:assertj-core:1.6.1'
+    testCompile 'junit:junit:4.12',
+                'org.assertj:assertj-core:1.7.1'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
