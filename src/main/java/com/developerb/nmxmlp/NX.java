@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * No more xml please!
  *
  * @author Kim A. Betti
  */
@@ -108,6 +109,12 @@ public class NX {
 
     }
 
+    public static interface Iterator {
+
+        void on(Cursor cursor) throws Ex;
+
+    }
+
     public static interface Inserter<R> {
 
         void insert(Cursor cursor, R input) throws Ex;
@@ -154,6 +161,8 @@ public class NX {
         <R> R extract(Extractor<R> extractor) throws Ex;
 
         <R> List<R> extractCollection(String needle, Extractor<R> extractor) throws Ex;
+
+        void iterateCollection(String needle, Iterator extractor) throws Ex;
 
         String text();
 
@@ -245,6 +254,9 @@ public class NX {
 
         @Override
         public int count(String tagName) { return 0; }
+
+        @Override
+        public void iterateCollection(String needle, Iterator extractor) throws Ex { /* ...*/ }
 
         @Override
         public <R> R extract(Extractor<R> extractor) throws Ex { return null; }
@@ -427,8 +439,24 @@ public class NX {
 
 
         @Override
-        public <R> List<R> extractCollection(String needle, Extractor<R> extractor) throws Ex {
+        public <R> List<R> extractCollection(String needle, final Extractor<R> extractor) throws Ex {
             final List<R> result = Lists.newArrayList();
+
+            iterateCollection(needle, new Iterator() {
+
+                @Override
+                public void on(Cursor cursor) throws Ex {
+                    final R converted = cursor.extract(extractor);
+                    result.add(converted);
+                }
+
+            });
+
+            return result;
+        }
+
+        @Override
+        public void iterateCollection(String needle, Iterator iterator) throws Ex {
             final NodeList childNodes = node.getChildNodes();
 
             int count = 0;
@@ -439,16 +467,10 @@ public class NX {
                 if (localName != null && localName.equalsIgnoreCase(needle)) {
                     final List<NodeCursor> newAncestorList = newAncestorList();
                     final Cursor cursor = new NodeCursor(newAncestorList, childNode, count++);
-                    final R converted = cursor.extract(extractor);
-
-                    result.add(converted);
+                    iterator.on(cursor);
                 }
             }
-
-            return result;
         }
-
-
 
 
         @Override
