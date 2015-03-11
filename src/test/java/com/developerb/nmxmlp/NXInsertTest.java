@@ -192,7 +192,7 @@ public class NXInsertTest {
     private static class PersonExtractor implements NX.Extractor<Person> {
 
         @Override
-        public Person transform(NX.NodeCursor cursor) throws NX.Ex {
+        public Person transform(NX.Cursor cursor) throws NX.Ex {
             return new Person(cursor.attr("name").text());
         }
 

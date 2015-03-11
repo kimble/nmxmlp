@@ -120,7 +120,7 @@ public class NXDataExtractionTest {
     static class PersonExtractor implements NX.Extractor<Person> {
 
         @Override
-        public Person transform(NX.NodeCursor cursor) throws NX.Ex {
+        public Person transform(NX.Cursor cursor) throws NX.Ex {
             return new Person (
                     cursor.to("name").text(),
                     cursor.to("age").extract(NX.asInteger())

@@ -105,7 +105,7 @@ public class NX {
 
     public static interface Extractor<R> {
 
-        R transform(NodeCursor cursor) throws Ex;
+        R transform(Cursor cursor) throws Ex;
 
     }
 
@@ -125,7 +125,7 @@ public class NX {
         return new Extractor<Integer>() {
 
             @Override
-            public Integer transform(NodeCursor cursor) throws Ex {
+            public Integer transform(Cursor cursor) throws Ex {
                 return Integer.parseInt(cursor.text());
             }
 
@@ -136,7 +136,7 @@ public class NX {
         return new Extractor<Double>() {
 
             @Override
-            public Double transform(NodeCursor cursor) throws Ex {
+            public Double transform(Cursor cursor) throws Ex {
                 return Double.parseDouble(cursor.text());
             }
 
