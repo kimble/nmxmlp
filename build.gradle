@@ -14,7 +14,7 @@ apply plugin: "java"
 
 
 group = 'com.developerb.nmxlp' // Yeah I know about the typo, but hard to change now that it's in JCenter..
-version = '0.9.1'
+version = '0.9.2'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6

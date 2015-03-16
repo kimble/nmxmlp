@@ -19,6 +19,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteSource;
 import org.w3c.dom.Document;
@@ -39,6 +40,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -50,6 +52,7 @@ public class NX {
 
     private final DocumentBuilder docBuilder;
     private final Transformer transformer;
+    private final Map<Class<?>, Extractor<?>> extractors = Maps.newHashMap();
 
     public NX(Feature... features) throws Ex {
         try {
@@ -64,10 +67,20 @@ public class NX {
 
             this.docBuilder = docBuilderFactory.newDocumentBuilder();
             this.transformer = transformer;
+
+            extractors.put(Integer.class, new IntegerExtractor());
+            extractors.put(Long.class, new LongExtractor());
+            extractors.put(Float.class, new FloatExtractor());
+            extractors.put(Double.class, new DoubleExtractor());
         }
         catch (Exception ex) {
             throw new Ex("Failed to initialize library", ex);
         }
+    }
+
+    public <R> NX registerExtractor(Class<R> type, Extractor<R> extractor) {
+        extractors.put(type, extractor);
+        return this;
     }
 
     public Cursor from(final String xml) throws Ex {
@@ -121,27 +134,44 @@ public class NX {
 
     }
 
-    public static Extractor<Integer> asInteger() {
-        return new Extractor<Integer>() {
+    private static class IntegerExtractor implements Extractor<Integer> {
 
-            @Override
-            public Integer transform(Cursor cursor) throws Ex {
-                return Integer.parseInt(cursor.text());
-            }
+        @Override
+        public Integer transform(Cursor cursor) throws Ex {
+            return Integer.parseInt(cursor.text());
+        }
 
-        };
     }
 
-    public static Extractor<Double> asDouble() {
-        return new Extractor<Double>() {
 
-            @Override
-            public Double transform(Cursor cursor) throws Ex {
-                return Double.parseDouble(cursor.text());
-            }
+    private static class LongExtractor implements Extractor<Long> {
 
-        };
+        @Override
+        public Long transform(Cursor cursor) throws Ex {
+            return Long.parseLong(cursor.text());
+        }
+
     }
+
+    private static class DoubleExtractor implements Extractor<Double> {
+
+        @Override
+        public Double transform(Cursor cursor) throws Ex {
+            return Double.parseDouble(cursor.text());
+        }
+
+    }
+
+    private static class FloatExtractor implements Extractor<Float> {
+
+        @Override
+        public Float transform(Cursor cursor) throws Ex {
+            return Float.parseFloat(cursor.text());
+        }
+
+    }
+
+
 
 
     /**
@@ -160,7 +190,11 @@ public class NX {
 
         <R> R extract(Extractor<R> extractor) throws Ex;
 
+        <R> R extract(Class<R> type) throws Ex;
+
         <R> List<R> extractCollection(String needle, Extractor<R> extractor) throws Ex;
+
+        <R> List<R> extractCollection(String needle, Class<R> type) throws Ex;
 
         void iterateCollection(String needle, Iterator extractor) throws Ex;
 
@@ -260,6 +294,14 @@ public class NX {
 
         @Override
         public <R> R extract(Extractor<R> extractor) throws Ex { return null; }
+
+        @Override
+        public <R> R extract(Class<R> type) throws Ex { return null; }
+
+        @Override
+        public <R> List<R> extractCollection(String needle, Class<R> type) throws Ex {
+            return Lists.newArrayList();
+        }
 
         @Override
         public <R> List<R> extractCollection(String needle, Extractor<R> extractor) throws Ex {
@@ -430,6 +472,30 @@ public class NX {
             }
 
             return count;
+        }
+
+        @Override
+        public <R> R extract(Class<R> type) throws Ex {
+            final Extractor<R> extractor = extractorFor(type);
+            return extract(extractor);
+        }
+
+        @Override
+        public <R> List<R> extractCollection(String needle, Class<R> type) throws Ex {
+            final Extractor<R> extractor = extractorFor(type);
+            return extractCollection(needle, extractor);
+        }
+
+        @SuppressWarnings("unchecked")
+        private <R> Extractor<R> extractorFor(Class<R> type) throws NoExtractor {
+            final Extractor<R> extractor = (Extractor<R>) extractors.get(type);
+
+            if (extractor == null) {
+                throw new NoExtractor(this, type);
+            }
+            else {
+                return extractor;
+            }
         }
 
         @Override
@@ -628,6 +694,14 @@ public class NX {
 
     }
 
+    public static class NoExtractor extends Ex {
+
+        public NoExtractor(Cursor cursor, Class<?> type) {
+            super(cursor, "No extractor for: " + type.getName());
+        }
+
+    }
+
     public static class MissingAttribute extends Ex {
 
         MissingAttribute(Cursor cursor, String attributeName) {
@@ -643,10 +717,6 @@ public class NX {
 
         public MissingNode(Cursor cursor, String needle) {
             super(cursor, "Unable to find '" + needle + "'");
-        }
-
-        public MissingNode(NodeCursor cursor, String needle, NamedNodeMap attributes) {
-            super(cursor, "Unable to find attribute named '" + needle + "' - Did you mean: " + summarize(attributes) + "?");
         }
 
         private static String summarize(NamedNodeMap attributes) {

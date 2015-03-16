@@ -22,7 +22,7 @@ public class NXIterationTest {
 
             @Override
             public void on(NX.Cursor cursor) throws NX.Ex {
-                sum.addAndGet(cursor.extract(NX.asInteger()));
+                sum.addAndGet(cursor.extract(Integer.class));
             }
 
         });
