@@ -50,7 +50,7 @@ import java.util.Set;
  */
 public class NX {
 
-    private final DocumentBuilder docBuilder;
+    private final DocumentBuilderFactory docBuilderFactory;
     private final Transformer transformer;
     private final Map<Class<?>, Extractor<?>> extractors = Maps.newHashMap();
 
@@ -65,7 +65,7 @@ public class NX {
                 feature.applyTo(transformer);
             }
 
-            this.docBuilder = docBuilderFactory.newDocumentBuilder();
+            this.docBuilderFactory = docBuilderFactory;
             this.transformer = transformer;
 
             extractors.put(Integer.class, new IntegerExtractor());
@@ -99,6 +99,7 @@ public class NX {
 
         try {
             stream = source.openStream();
+            final DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
             final Document document = docBuilder.parse(stream);
             return new NodeCursor(document.getDocumentElement());
         }
@@ -666,7 +667,9 @@ public class NX {
         public String dumpXml() throws Ex {
             try {
                 StringWriter sw = new StringWriter();
-                transformer.transform(new DOMSource(node), new StreamResult(sw));
+                synchronized (transformer) {
+                    transformer.transform(new DOMSource(node), new StreamResult(sw));
+                }
 
                 return sw.toString();
             }
