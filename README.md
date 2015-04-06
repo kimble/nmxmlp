@@ -13,6 +13,7 @@ API doing just that.
 
 [![Build Status](https://drone.io/github.com/kimble/nmxmlp/status.png)](https://drone.io/github.com/kimble/nmxmlp/latest)
 [![Download](https://api.bintray.com/packages/kim-betti/maven/nmxmlp/images/download.png) ](https://bintray.com/kim-betti/maven/nmxmlp/_latestVersion)
+[![endorse](https://api.coderwall.com/kimble/endorsecount.png)](https://coderwall.com/kimble)
 
 
 Design goals - In order of importance
@@ -45,14 +46,11 @@ Have a look at the test cases for more examples
         assertEquals("Mikke Mus", reloaded.to("name").text());
     }
 
-Roadmap
--------
+Roadmap 1.0
+-----------
 This library has already solved my problems so I may never get around to improve it, but if I do,
 here is a list of things that I'd like to look into.
 
-1. Reduce the number of methods in the `NX.Cursor` interface.
-2. Improve the API dealing with "optional" nodes and the associated dummy implementations of `NX.Cursor` and `NX.Attribute`.
-3. Overall I'm quite happy with the API, but it could probably be improved in a number of area.
-
-
-[![endorse](https://api.coderwall.com/kimble/endorsecount.png)](https://coderwall.com/kimble)
+1. Implement some real world examples to flush out api mistakes
+2. Add support for extracting different data types then String from attributes
+3. Further improvements to error messages
