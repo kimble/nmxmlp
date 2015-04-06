@@ -681,7 +681,7 @@ public class NX {
     }
 
 
-    public static class Ex extends Exception {
+    public static class Ex extends RuntimeException {
 
         protected Ex(Cursor cursor, String message) {
             super(cursor.describePath() + " -- " + message);
