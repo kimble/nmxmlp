@@ -15,6 +15,7 @@
  */
 package com.developerb.nmxmlp;
 
+import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -29,7 +30,6 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -42,6 +42,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static javax.xml.transform.OutputKeys.INDENT;
+import static javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION;
 
 /**
  * No more xml please!
@@ -238,8 +241,22 @@ public class NX {
 
     public static interface Attribute {
 
+        /**
+         * @return The text value of the attribute
+         */
         String text();
 
+        /**
+         * Map the text value of the attribute by applying the given function.
+         *
+         * Warning: At some point I'll make this library Java 8 only and replace
+         * the Guava function with the Java 8 interface.
+         */
+        <R> R text(Function<String, R> func);
+
+        /**
+         * @param text the new attribute text
+         */
         void text(String text);
 
     }
@@ -250,6 +267,11 @@ public class NX {
 
         public RealAttribute(Node node) {
             this.node = node;
+        }
+
+        @Override
+        public <R> R text(Function<String, R> func) {
+            return func.apply(text());
         }
 
         @Override
@@ -265,6 +287,9 @@ public class NX {
     }
 
     public static class NullAttribute implements Attribute {
+
+        @Override
+        public <R> R text(Function<String, R> func) { return null; }
 
         @Override
         public String text() { return null; }
@@ -758,15 +783,15 @@ public class NX {
 
         DUMP_INDENTED_XML {
             @Override
-            void applyTo(Transformer t) {
-                t.setOutputProperty(OutputKeys.INDENT, "yes");
+            void applyTo(Transformer transformer) {
+                transformer.setOutputProperty(INDENT, "yes");
             }
         },
 
         DUMP_WITHOUT_XML_DECLARATION {
             @Override
-            void applyTo(Transformer t) {
-                t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            void applyTo(Transformer transformer) {
+                transformer.setOutputProperty(OMIT_XML_DECLARATION, "yes");
             }
         }
 

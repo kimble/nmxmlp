@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-public class NXNavigationTest {
+public class NXNavigationTest extends AbstractNXTest {
 
     private final String messageXml = "<message><header><id>id-123</id></header><body><person><name>Nasse Nøff</name><age>12</age></person></body></message>";
 
@@ -31,8 +31,7 @@ public class NXNavigationTest {
 
     @Test
     public void simpleNavigationUsingTo() throws NX.Ex {
-        NX nx = new NX();
-        NX.Cursor message = nx.from(messageXml);
+        NX.Cursor message = parse(messageXml);
 
         assertEquals("id-123", message.to("header", "id").text());
         assertEquals("id-123", message.to("header").to("id").text());
@@ -40,8 +39,7 @@ public class NXNavigationTest {
 
     @Test
     public void ambiguousNavigationShouldResultInException() throws Exception {
-        NX nx = new NX();
-        NX.Cursor headers = nx.from(headersXml);
+        NX.Cursor headers = parse(headersXml);
 
         try {
             headers.to("header");
@@ -56,8 +54,7 @@ public class NXNavigationTest {
 
     @Test
     public void describeCursorPath() throws NX.Ex {
-        NX nx = new NX();
-        NX.Cursor message = nx.from(headersXml);
+        NX.Cursor message = parse(headersXml);
 
         assertEquals("headers >> header >> k", message.to(0, "header").to("k").describePath());
         assertEquals("headers >> header[1] >> k", message.to(1, "header").to("k").describePath());
@@ -65,8 +62,7 @@ public class NXNavigationTest {
 
     @Test
     public void navigatingToMissingNodeShouldOfferHelpfulExceptionMessage() throws Exception {
-        NX nx = new NX();
-        NX.Cursor message = nx.from(messageXml);
+        NX.Cursor message = parse(messageXml);
 
         try {
             message.to("header").to("idd");
@@ -81,8 +77,7 @@ public class NXNavigationTest {
 
     @Test
     public void optionalNavigationAndDefaultValues() throws Exception {
-        NX nx = new NX();
-        NX.Cursor message = nx.from(messageXml);
+        NX.Cursor message = parse(messageXml);
         NX.Cursor missingNode = message.to("header").toOptional("no-such-node");
 
         assertNull(missingNode.name());
@@ -92,8 +87,7 @@ public class NXNavigationTest {
 
     @Test
     public void deepNavigationWithOptionalNodesOneMissing() throws Exception {
-        NX nx = new NX();
-        NX.Cursor message = nx.from(messageXml);
+        NX.Cursor message = parse(messageXml);
         NX.Cursor missingNode = message.toOptional("header", "no-such-node");
 
         assertNull(missingNode.text());
@@ -101,8 +95,7 @@ public class NXNavigationTest {
 
     @Test
     public void deepNavigationWithOptionalNodesBothMissing() throws Exception {
-        NX nx = new NX();
-        NX.Cursor message = nx.from(messageXml);
+        NX.Cursor message = parse(messageXml);
         NX.Cursor missingNode = message.toOptional("no-such-node", "another-missing-node");
 
         assertNull(missingNode.text());
@@ -110,8 +103,7 @@ public class NXNavigationTest {
 
     @Test
     public void deepNavigationWithOptionalNodesBothExisting() throws Exception {
-        NX nx = new NX();
-        NX.Cursor message = nx.from(messageXml);
+        NX.Cursor message = parse(messageXml);
         NX.Cursor existingNode = message.toOptional("header", "id");
 
         assertEquals("id-123", existingNode.text());
@@ -119,8 +111,7 @@ public class NXNavigationTest {
 
     @Test
     public void describingThePathToAMissingNodeDoesntMakeSense() throws Exception {
-        NX nx = new NX();
-        NX.Cursor message = nx.from(messageXml);
+        NX.Cursor message = parse(messageXml);
         NX.Cursor missingNode = message.to("header").toOptional("no-such-node");
 
         try {
@@ -136,8 +127,7 @@ public class NXNavigationTest {
 
     @Test
     public void dumpingXmlFromAMissingNodeDoesntMakeSense() throws Exception {
-        NX nx = new NX();
-        NX.Cursor message = nx.from(messageXml);
+        NX.Cursor message = parse(messageXml);
         NX.Cursor missingNode = message.to("header").toOptional("no-such-node");
 
         try {

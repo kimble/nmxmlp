@@ -26,15 +26,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
-/**
- * @author Kim A. Betti
- */
-public class NXInsertTest {
+public class NXInsertTest extends AbstractNXTest {
 
     @Test
     public void insertCollectionNoNamespaces() throws NX.Ex {
-        NX nx = new NX();
-        NX.Cursor peopleCursor = nx.from("<people><person name='Prototype' /></people>");
+        NX.Cursor peopleCursor = parse("<people><person name='Prototype' /></people>");
 
         List<Person> people = Arrays.asList (
                 new Person("Nasse Nøff"),
@@ -44,7 +40,7 @@ public class NXInsertTest {
         peopleCursor.insertCollection("person", people, new PersonInserter());
 
 
-        NX.Cursor reloadedPeopleCursor = nx.from(peopleCursor.dumpXml());
+        NX.Cursor reloadedPeopleCursor = parse(peopleCursor.dumpXml());
         List<Person> extractedPeople = reloadedPeopleCursor.extractCollection("person", new PersonExtractor());
 
         assertEquals(people, extractedPeople);
@@ -55,8 +51,7 @@ public class NXInsertTest {
         URL svgResource = Resources.getResource("svg/simple-svg.xhtml");
         ByteSource svgByteSource = Resources.asByteSource(svgResource);
 
-        NX nx = new NX();
-        NX.Cursor cursor = nx.from(svgByteSource);
+        NX.Cursor cursor = parse(svgByteSource);
         NX.Cursor svg = cursor.to("body").to("svg");
 
         List<Circle> circles = Arrays.asList (
@@ -79,14 +74,13 @@ public class NXInsertTest {
         URL soapRequestResource = Resources.getResource("soap/soap-request.xml");
         ByteSource soapRequestSource = Resources.asByteSource(soapRequestResource);
 
-        NX nx = new NX();
-        NX.Cursor soapEnvelope = nx.from(soapRequestSource);
+        NX.Cursor soapEnvelope = parse(soapRequestSource);
 
         NX.Cursor requestHeader = soapEnvelope.to("header", "requestHeader");
         RequestHeader someHeader = new RequestHeader("n-code", "app-name");
         requestHeader.update(someHeader, new SoapRequestHeaderInserter());
 
-        NX.Cursor reloadedSoapEnvelope = nx.from(soapEnvelope.dumpXml());
+        NX.Cursor reloadedSoapEnvelope = parse(soapEnvelope.dumpXml());
         assertEquals("n-code", reloadedSoapEnvelope.to("header", "requestHeader", "networkCode").text());
         assertEquals("app-name", reloadedSoapEnvelope.to("header", "requestHeader", "applicationName").text());
     }
@@ -94,8 +88,7 @@ public class NXInsertTest {
 
     @Test
     public void insertedElementsInConnectionShouldBePositionedInTheSamePlaceAsThePrototypeElement() throws NX.Ex {
-        NX nx = new NX();
-        NX.Cursor root = nx.from("<root><repeatMe /><fixed>should-not-move</fixed></root>");
+        NX.Cursor root = parse("<root><repeatMe /><fixed>should-not-move</fixed></root>");
 
         root.insertCollection("repeatMe", Arrays.asList("hei", "på", "deg"), new NX.Inserter<String>() {
 

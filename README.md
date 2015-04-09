@@ -52,5 +52,4 @@ This library has already solved my problems so I may never get around to improve
 here is a list of things that I'd like to look into.
 
 1. Implement some real world examples to flush out api mistakes
-2. Add support for extracting different data types then String from attributes
-3. Further improvements to error messages
+2. Further improvements to error messages

@@ -20,7 +20,7 @@ import org.junit.Test;
 import static com.developerb.nmxmlp.NX.Feature.DUMP_WITHOUT_XML_DECLARATION;
 import static org.junit.Assert.*;
 
-public class NXDumpingTest {
+public class NXDumpingTest extends AbstractNXTest {
 
     private String xml = "<a><b><c>value</c></b></a>";
 
@@ -42,8 +42,7 @@ public class NXDumpingTest {
 
     @Test
     public void dumpXmlWithXmlDeclaration() throws Exception {
-        NX nx = new NX();
-        NX.Cursor root = nx.from(xml);
+        NX.Cursor root = parse(xml);
 
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><a><b><c>value</c></b></a>", root.dumpXml());
     }

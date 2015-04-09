@@ -22,7 +22,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
-public class NXDataExtractionTest {
+public class NXDataExtractionTest extends AbstractNXTest {
 
     private final String peopleXml = "<people>" +
             "<person><name>Nasse Nøff</name><age>5</age></person>" +
@@ -37,8 +37,7 @@ public class NXDataExtractionTest {
 
     @Test
     public void simpleDataExtraction() throws Exception {
-        NX nx = new NX();
-        NX.Cursor person = nx.from(personXml);
+        NX.Cursor person = parse(personXml);
 
         assertEquals("Nasse Nøff", person.to("name").text());
         assertEquals(5, (int) person.to("age").extract(Integer.class));
@@ -46,24 +45,21 @@ public class NXDataExtractionTest {
 
     @Test
     public void extractDouble() throws Exception {
-        NX nx = new NX();
-        NX.Cursor root = nx.from("<root><double>3.14159265</double></root>");
+        NX.Cursor root = parse("<root><double>3.14159265</double></root>");
 
         assertEquals(Math.PI, root.extract(Double.class), 0.00001);
     }
 
     @Test
     public void countElements() throws Exception {
-        NX nx = new NX();
-        NX.Cursor people = nx.from(peopleXml);
+        NX.Cursor people = parse(peopleXml);
 
         assertEquals(2, people.count("person"));
     }
 
     @Test
     public void extractSingleObject() throws Exception {
-        NX nx = new NX();
-        NX.Cursor person = nx.from(personXml);
+        NX.Cursor person = parse(personXml);
 
         NX.Extractor<Person> extractor = new PersonExtractor();
         Person nasseNoff = person.extract(extractor);
@@ -74,8 +70,7 @@ public class NXDataExtractionTest {
 
     @Test
     public void extractObjectCollection() throws Exception {
-        NX nx = new NX();
-        NX.Cursor person = nx.from(peopleXml);
+        NX.Cursor person = parse(peopleXml);
 
         NX.Extractor<Person> extractor = new PersonExtractor();
         List<Person> people = person.extractCollection("person", extractor);

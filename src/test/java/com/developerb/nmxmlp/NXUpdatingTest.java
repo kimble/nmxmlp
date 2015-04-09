@@ -20,34 +20,30 @@ import org.junit.Test;
 
 import java.net.URL;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-public class NXUpdatingTest {
-
+public class NXUpdatingTest extends AbstractNXTest {
 
     @Test
     public void updateText() throws Exception {
-        NX nx = new NX();
-        NX.Cursor person = nx.from("<person><name>Donald Duck</name><age>30</age></person>");
+        NX.Cursor person = parse("<person><name>Donald Duck</name><age>30</age></person>");
         person.to("name").text("Mikke Mus");
 
-        NX.Cursor reloaded = nx.from(person.dumpXml());
+        NX.Cursor reloaded = parse(person.dumpXml());
         assertEquals("Mikke Mus", reloaded.to("name").text());
     }
 
     @Test
     public void soapRequestPrototype() throws Exception {
-        NX nx = new NX();
-
         URL soapRequestResource = Resources.getResource("soap/soap-request.xml");
-        NX.Cursor envelope = nx.from(Resources.asByteSource(soapRequestResource));
+        NX.Cursor envelope = parse(Resources.asByteSource(soapRequestResource));
 
         envelope.to("header")
                 .to("requestheader")
                 .to("networkcode")
                 .text("my-network-code");
 
-        NX.Cursor reloadedEnvelope = nx.from(envelope.dumpXml());
+        NX.Cursor reloadedEnvelope = parse(envelope.dumpXml());
         assertEquals("my-network-code", reloadedEnvelope.to("header")
                 .to("requestheader")
                 .to("networkcode")
@@ -56,16 +52,14 @@ public class NXUpdatingTest {
 
     @Test
     public void updateSoapRequestAttribute() throws Exception {
-        NX nx = new NX();
-
         URL soapRequestResource = Resources.getResource("soap/soap-request.xml");
-        NX.Cursor envelope = nx.from(Resources.asByteSource(soapRequestResource));
+        NX.Cursor envelope = parse(Resources.asByteSource(soapRequestResource));
 
         assertEquals("0", envelope.to("header", "requestheader").attr("mustunderstand").text());
 
         envelope.to("header", "requestheader").attr("mustunderstand").text("1");
 
-        NX.Cursor reloadedEnvelope = nx.from(envelope.dumpXml());
+        NX.Cursor reloadedEnvelope = parse(envelope.dumpXml());
         assertEquals("1", reloadedEnvelope.to("header", "requestheader").attr("mustunderstand").text());
     }
 

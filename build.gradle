@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.5'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
     }
 }
 
@@ -14,10 +14,35 @@ apply plugin: "java"
 
 
 group = 'com.developerb.nmxlp' // Yeah I know about the typo, but hard to change now that it's in JCenter..
-version = '0.9.3'
+version = '0.9.4'
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
+compileJava {
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+
+    options.encoding = 'UTF-8'
+    options.compilerArgs = [
+            "-Xlint:varargs", "-Xlint:cast", "-Xlint:classfile",
+            "-Xlint:dep-ann", "-Xlint:divzero", "-Xlint:empty", "-Xlint:finally",
+            "-Xlint:overrides", "-Xlint:path", "-Xlint:processing", "-Xlint:static",
+            "-Xlint:fallthrough", "-Xlint:rawtypes",
+            "-Xlint:unchecked", "-Xlint:-options", "-Werror"
+    ]
+}
+
+compileTestJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    options.encoding = 'UTF-8'
+    options.compilerArgs = [
+            "-Xlint:varargs", "-Xlint:cast", "-Xlint:classfile",
+            "-Xlint:dep-ann", "-Xlint:divzero", "-Xlint:empty", "-Xlint:finally",
+            "-Xlint:overrides", "-Xlint:path", "-Xlint:processing", "-Xlint:static",
+            "-Xlint:-fallthrough", "-Xlint:-rawtypes", "-Xlint:-deprecation",
+            "-Xlint:-unchecked", "-Xlint:-options"
+    ]
+}
 
 repositories {
     jcenter()

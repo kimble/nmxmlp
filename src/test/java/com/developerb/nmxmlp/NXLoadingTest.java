@@ -22,13 +22,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-public class NXLoadingTest {
+public class NXLoadingTest extends AbstractNXTest {
 
     @Test
     public void loadInvalidXML() throws Exception {
         try {
-            NX nx = new NX();
-            nx.from("<root><unclosedTag></root>");
+            parse("<root><unclosedTag></root>");
 
             fail("Should not have accepted invalid xml");
         }
@@ -41,8 +40,7 @@ public class NXLoadingTest {
 
     @Test
     public void loadValidXML() throws Exception {
-        NX nx = new NX();
-        NX.Cursor cursor = nx.from("<root><a /></root>");
+        NX.Cursor cursor = parse("<root><a /></root>");
 
         assertNotNull(cursor);
         assertEquals("root", cursor.name());

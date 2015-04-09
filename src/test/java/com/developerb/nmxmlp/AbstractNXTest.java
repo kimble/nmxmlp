@@ -15,22 +15,31 @@
  */
 package com.developerb.nmxmlp;
 
-import org.junit.Test;
+import com.google.common.io.ByteSource;
+import org.junit.Before;
 
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
 
-public class NXIterationTest extends AbstractNXTest {
+public abstract class AbstractNXTest {
 
-    @Test
-    public void iterate() throws NX.Ex {
-        NX.Cursor numbersCursor = parse("<numbers><n>1</n><n>2</n></numbers>");
+    private NX nx;
 
-        AtomicInteger sum = new AtomicInteger(0);
-        numbersCursor.iterateCollection("n", cursor -> sum.addAndGet(cursor.extract(Integer.class)));
+    @Before
+    public final void initialize() throws Exception {
+        this.nx = new NX();
+        withNx(nx);
+    }
 
-        assertEquals(3, sum.get());
+    protected void withNx(NX nx) {
+        // A good place for tests to add extractors etc.
+    }
+
+    protected NX.Cursor parse(String xml) {
+        return nx.from(xml);
+    }
+
+    protected NX.Cursor parse(ByteSource source) {
+        return nx.from(source);
     }
 
 }
