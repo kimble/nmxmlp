@@ -109,34 +109,4 @@ public class AttributeTest extends AbstractNXTest {
         assertNull(nothing);
     }
 
-    @Test
-    public void optionalButExistingAttribute() {
-        NX.Cursor root = parse(xml);
-        NX.Cursor person = root.to("person");
-
-        Integer age = person.optionalAttr("age").text(Integer::parseInt);
-
-        assertThat(age)
-                .as("Extracted age")
-                .isEqualTo(10);
-    }
-
-    @Test
-    public void attributeOnMissingOptionalNode() {
-        NX.Cursor root = parse(xml);
-        NX.Cursor pirate = root.toOptional("pirate"); // Does not exist
-
-        Integer numberOfLegs = pirate.attr("legs").text(Integer::parseInt);
-        assertNull(numberOfLegs);
-    }
-
-    @Test
-    public void optionalAttributeOnMissingOptionalNode() {
-        NX.Cursor root = parse(xml);
-        NX.Cursor pirate = root.toOptional("pirate"); // Does not exist
-
-        Integer numberOfLegs = pirate.optionalAttr("legs").text(Integer::parseInt);
-        assertNull(numberOfLegs);
-    }
-
 }
