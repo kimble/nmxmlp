@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteSource;
+import com.google.common.io.Closeables;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -110,12 +111,7 @@ public class NX {
             throw new Ex("Failed to initialize xml cursor", ex);
         }
         finally {
-            try {
-                if (stream != null) {
-                    stream.close();
-                }
-            }
-            catch (IOException ignored) { }
+            Closeables.closeQuietly(stream);
         }
     }
 
