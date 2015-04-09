@@ -38,6 +38,46 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
+    public void describePathRoot() {
+        NX.Cursor message = parse(messageXml);
+        String describedPath = message.describePath();
+
+        assertEquals("message", describedPath);
+    }
+
+    @Test
+    public void describePathLevelOne() {
+        NX.Cursor message = parse(messageXml);
+        String describedPath = message.to("header").describePath();
+
+        assertEquals("message >> header", describedPath);
+    }
+
+    @Test
+    public void describePathLevelTwo() {
+        NX.Cursor message = parse(messageXml);
+        String describedPath = message.to("header", "id").describePath();
+
+        assertEquals("message >> header >> id", describedPath);
+    }
+
+    @Test
+    public void describePathSecondNode() {
+        NX.Cursor headers = parse(headersXml);
+        String describedPath = headers.to(1, "header").describePath();
+
+        assertEquals("headers >> header[1]", describedPath);
+    }
+
+    @Test
+    public void describePathFirstNode() {
+        NX.Cursor headers = parse(headersXml);
+        String describedPath = headers.to(0, "header").describePath();
+
+        assertEquals("headers >> header", describedPath);
+    }
+
+    @Test
     public void ambiguousNavigationShouldResultInException() throws Exception {
         NX.Cursor headers = parse(headersXml);
 
