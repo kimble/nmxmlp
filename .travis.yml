@@ -1,4 +1,4 @@
-script: ./gradlew check -PbintrayUser=x -PbintrayKey=y
+script: ./gradlew check
 language: java
 
 jdk:
@@ -7,11 +7,10 @@ jdk:
 # Skip ./gradlew assemble
 install: /bin/true
 
+# No nagging
 notifications:
   email: false
 
-env:
-- TERM=dumb
-
+# Publish coverage data to Coveralls.io
 after_success:
-- ./gradlew jacocoTestReport coveralls -PbintrayUser=x -PbintrayKey=y
+- ./gradlew jacocoTestReport coveralls

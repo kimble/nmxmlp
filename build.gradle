@@ -96,27 +96,34 @@ publishing {
     }
 }
 
-bintray {
-    user = bintrayUser
-    key = bintrayKey
+if (hasProperty("bintrayUser") && hasProperty("bintrayKey")) {
+    bintray {
+        user = bintrayUser
+        key = bintrayKey
 
-    publications = [ 'mavenJava' ] // see publications closure
+        publications = [ 'mavenJava' ] // see publications closure
 
-    pkg { //package will be created if does not exist
-        repo = 'maven'
-        name = 'nmxmlp'
-        desc = 'Simple Java-library for extracting and updating small-ish xml documents'
+        pkg { //package will be created if does not exist
+            repo = 'maven'
+            name = 'nmxmlp'
+            desc = 'Simple Java-library for extracting and updating small-ish xml documents'
 
-        websiteUrl = 'https://github.com/kimble/nmxmlp'
-        issueTrackerUrl = 'https://github.com/kimble/nmxmlp/issues'
-        vcsUrl = 'https://github.com/kimble/nmxmlp.git'
+            websiteUrl = 'https://github.com/kimble/nmxmlp'
+            issueTrackerUrl = 'https://github.com/kimble/nmxmlp/issues'
+            vcsUrl = 'https://github.com/kimble/nmxmlp.git'
 
-        licenses = ['Apache-2.0']
-        labels = ['java', 'xml', 'library']
+            licenses = ['Apache-2.0']
+            labels = ['java', 'xml', 'library']
 
-        publicDownloadNumbers = true
+            publish = true
+            publicDownloadNumbers = true
+        }
     }
 }
+else {
+    logger.debug("Set bintrayUser and bintrayKey in ~/.gradle/gradle.properties to enable bintray upload")
+}
+
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.3'
