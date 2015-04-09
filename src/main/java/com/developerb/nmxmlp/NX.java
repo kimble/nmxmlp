@@ -295,6 +295,12 @@ public class NX {
 
     public class EmptyCursor implements Cursor {
 
+        private final NodeCursor lastKnownCursor;
+
+        public EmptyCursor(NodeCursor lastKnownCursor) {
+            this.lastKnownCursor = lastKnownCursor;
+        }
+
         @Override
         public Cursor to(String firstName, String... remainingNames) throws Ex { return this; }
 
@@ -337,7 +343,7 @@ public class NX {
 
         @Override
         public String describePath() {
-            throw new UnsupportedOperationException("Can't describe path to empty node");
+            return lastKnownCursor.describePath() + " >> ???";
         }
 
         @Override
@@ -400,7 +406,7 @@ public class NX {
             Optional<Node> result = findSingleNode(firstNeedle);
             Cursor cursor = result.isPresent()
                     ? to(firstNeedle)
-                    : new EmptyCursor();
+                    : new EmptyCursor(this);
 
             for (String remainingNeedle : remainingNeedles) {
                 cursor = cursor.toOptional(remainingNeedle);

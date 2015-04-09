@@ -71,6 +71,15 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
+    public void describePathMissingNodeUnderLevelTwo() {
+        NX.Cursor message = parse(messageXml);
+        NX.Cursor id = message.to("header", "id");
+        String describedPath = id.toOptional("no-such-node").describePath();
+
+        assertEquals("message >> header >> id >> ???", describedPath);
+    }
+
+    @Test
     public void describePathSecondNode() {
         NX.Cursor headers = parse(headersXml);
         String describedPath = headers.to(1, "header").describePath();
@@ -156,22 +165,6 @@ public class NavigationTest extends AbstractNXTest {
         NX.Cursor existingNode = message.toOptional("header", "id");
 
         assertEquals("id-123", existingNode.text());
-    }
-
-    @Test
-    public void describingThePathToAMissingNodeDoesntMakeSense() throws Exception {
-        NX.Cursor message = parse(messageXml);
-        NX.Cursor missingNode = message.to("header").toOptional("no-such-node");
-
-        try {
-            missingNode.describePath();
-            fail("Describing the path to a missing node doesn't make sense");
-        }
-        catch (UnsupportedOperationException ex) {
-            assertThat(ex)
-                    .as("The expected exception")
-                    .hasMessage("Can't describe path to empty node");
-        }
     }
 
     @Test
