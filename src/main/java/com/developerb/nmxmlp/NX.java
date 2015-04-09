@@ -15,10 +15,7 @@
  */
 package com.developerb.nmxmlp;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import com.google.common.base.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -37,8 +34,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -198,6 +196,8 @@ public class NX {
 
         String dumpXml(Feature... features) throws Ex;
 
+        void dumpXml(OutputStream output, Feature... features) throws Ex;
+
         Attribute attr(String name) throws Ambiguous, MissingAttribute;
 
         Attribute optionalAttr(String name) throws Ambiguous;
@@ -247,7 +247,7 @@ public class NX {
 
     }
 
-    public static class RealAttribute implements Attribute {
+    private static class RealAttribute implements Attribute {
 
         private final Node node;
 
@@ -272,7 +272,7 @@ public class NX {
 
     }
 
-    public static class NullAttribute implements Attribute {
+    private static class NullAttribute implements Attribute {
 
         @Override
         public <R> R text(Function<String, R> func) { return null; }
@@ -287,7 +287,7 @@ public class NX {
 
 
 
-    public class EmptyCursor implements Cursor {
+    private class EmptyCursor implements Cursor {
 
         private final NodeCursor lastKnownCursor;
 
@@ -346,6 +346,11 @@ public class NX {
         }
 
         @Override
+        public void dumpXml(OutputStream output, Feature... features) throws Ex {
+            throw new UnsupportedOperationException("Can't dump empty cursor");
+        }
+
+        @Override
         public Attribute attr(String name) {
             return new NullAttribute();
         }
@@ -364,7 +369,7 @@ public class NX {
     }
 
 
-    public class NodeCursor implements Cursor {
+    private class NodeCursor implements Cursor {
 
         private final Node node;
         private final List<NodeCursor> ancestors;
@@ -672,6 +677,14 @@ public class NX {
 
         @Override
         public String dumpXml(Feature... features) throws Ex {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            dumpXml(output, features);
+
+            return new String(output.toByteArray(), Charsets.UTF_8);
+        }
+
+        @Override
+        public void dumpXml(OutputStream output, Feature... features) throws Ex {
             try {
                 Transformer transformer = transformerFactory.newTransformer();
                 Feature.DUMP_UTF_8.applyTo(transformer);
@@ -680,10 +693,8 @@ public class NX {
                     feature.applyTo(transformer);
                 }
 
-                StringWriter sw = new StringWriter();
-                transformer.transform(new DOMSource(node), new StreamResult(sw));
-
-                return sw.toString();
+                StreamResult result = new StreamResult(output);
+                transformer.transform(new DOMSource(node), result);
             }
             catch (Exception ex) {
                 throw new Ex(this, "Technical difficulties", ex);
