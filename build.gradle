@@ -4,12 +4,16 @@ buildscript {
     }
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
     }
 }
 
 apply plugin: "com.jfrog.bintray"
 apply plugin: "maven-publish"
 apply plugin: "java"
+
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
 
 
 
@@ -48,11 +52,18 @@ repositories {
     jcenter()
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
+}
+
 dependencies {
     compile 'com.google.guava:guava:18.0'
 
     testCompile 'junit:junit:4.12',
-                'org.assertj:assertj-core:1.7.1'
+            'org.assertj:assertj-core:1.7.1'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
