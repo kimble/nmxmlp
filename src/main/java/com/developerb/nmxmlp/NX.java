@@ -743,17 +743,6 @@ public class NX {
             super(cursor, "Unable to find '" + needle + "'");
         }
 
-        private static String summarize(NamedNodeMap attributes) {
-            final Set<String> names = Sets.newTreeSet();
-            for (int i=0; i<attributes.getLength(); i++) {
-                names.add(attributes.item(i).getLocalName());
-            }
-
-            return Joiner.on(", ")
-                    .skipNulls()
-                    .join(names);
-        }
-
         private static String summarize(NodeList childNodes) {
             final Set<String> names = Sets.newTreeSet();
             for (int i=0; i<childNodes.getLength(); i++) {

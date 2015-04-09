@@ -19,13 +19,10 @@ import com.google.common.base.Function;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 
-public class NXAttributeTest extends AbstractNXTest {
+public class AttributeTest extends AbstractNXTest {
 
     private final String xml = "<root><person firstName='Nasse' lastName='Nøff' age='10' /></root>";
 
