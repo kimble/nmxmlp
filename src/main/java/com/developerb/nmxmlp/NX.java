@@ -31,6 +31,7 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -461,7 +462,7 @@ public class NX {
                 }
             }
 
-            throw new MissingNode(this, tagName, position, childNodes); 
+            throw new MissingNode(this, tagName, position, childNodes);
         }
 
         private List<NodeCursor> newAncestorList() {
@@ -673,6 +674,7 @@ public class NX {
         public String dumpXml(Feature... features) throws Ex {
             try {
                 Transformer transformer = transformerFactory.newTransformer();
+                Feature.DUMP_UTF_8.applyTo(transformer);
 
                 for (Feature feature : features) {
                     feature.applyTo(transformer);
@@ -758,6 +760,15 @@ public class NX {
     }
 
     public static enum Feature {
+
+        DUMP_UTF_8 {
+
+            @Override
+            void applyTo(Transformer transformer) {
+                transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            }
+
+        },
 
         DUMP_INDENTED_XML {
             @Override
