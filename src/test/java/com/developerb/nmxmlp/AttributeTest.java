@@ -121,4 +121,22 @@ public class AttributeTest extends AbstractNXTest {
                 .isEqualTo(10);
     }
 
+    @Test
+    public void attributeOnMissingOptionalNode() {
+        NX.Cursor root = parse(xml);
+        NX.Cursor pirate = root.toOptional("pirate"); // Does not exist
+
+        Integer numberOfLegs = pirate.attr("legs").text(Integer::parseInt);
+        assertNull(numberOfLegs);
+    }
+
+    @Test
+    public void optionalAttributeOnMissingOptionalNode() {
+        NX.Cursor root = parse(xml);
+        NX.Cursor pirate = root.toOptional("pirate"); // Does not exist
+
+        Integer numberOfLegs = pirate.optionalAttr("legs").text(Integer::parseInt);
+        assertNull(numberOfLegs);
+    }
+
 }
