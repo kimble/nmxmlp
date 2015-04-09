@@ -91,7 +91,7 @@ public class NX {
         return from(new ByteSource() {
 
             @Override
-            public InputStream openStream() throws IOException {
+            public InputStream openStream() {
                 return new ByteArrayInputStream(xml.getBytes());
             }
 
