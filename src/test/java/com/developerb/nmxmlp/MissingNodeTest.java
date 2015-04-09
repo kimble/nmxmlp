@@ -61,5 +61,5 @@ public class MissingNodeTest extends AbstractNXTest {
 
         assertNull(pirateLegs.text());
     }
-    
+
 }

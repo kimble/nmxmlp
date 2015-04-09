@@ -29,12 +29,21 @@ public class NavigationTest extends AbstractNXTest {
     private final String headersXml = "<headers><header><k>k1</k><v>v1</v></header><header><k>k2</k><v>v2</v></header></headers>";
 
 
+
     @Test
     public void simpleNavigationUsingTo() throws NX.Ex {
         NX.Cursor message = parse(messageXml);
 
         assertEquals("id-123", message.to("header", "id").text());
         assertEquals("id-123", message.to("header").to("id").text());
+    }
+
+    @Test
+    public void toStringWillDescribePath() {
+        NX.Cursor message = parse(messageXml);
+        String describedPath = message.toString();
+
+        assertEquals("message", describedPath);
     }
 
     @Test
