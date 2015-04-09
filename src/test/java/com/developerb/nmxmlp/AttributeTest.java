@@ -109,4 +109,16 @@ public class AttributeTest extends AbstractNXTest {
         assertNull(nothing);
     }
 
+    @Test
+    public void optionalButExistingAttribute() {
+        NX.Cursor root = parse(xml);
+        NX.Cursor person = root.to("person");
+
+        Integer age = person.optionalAttr("age").text(Integer::parseInt);
+
+        assertThat(age)
+                .as("Extracted age")
+                .isEqualTo(10);
+    }
+
 }
