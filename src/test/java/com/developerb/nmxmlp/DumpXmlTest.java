@@ -20,7 +20,7 @@ import org.junit.Test;
 import static com.developerb.nmxmlp.NX.Feature.DUMP_WITHOUT_XML_DECLARATION;
 import static org.junit.Assert.*;
 
-public class NXDumpingTest extends AbstractNXTest {
+public class DumpXmlTest extends AbstractNXTest {
 
     private String xml = "<a><b><c>value</c></b></a>";
 

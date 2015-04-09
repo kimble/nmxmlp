@@ -23,8 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-public class NXExtractorRegistry {
-
+public class ExtractorRegistryTest {
 
     @Test
     public void extract() throws NX.Ex {

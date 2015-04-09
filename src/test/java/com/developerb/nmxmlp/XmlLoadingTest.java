@@ -15,19 +15,33 @@
  */
 package com.developerb.nmxmlp;
 
+import com.google.common.io.ByteSource;
 import org.junit.Test;
 
+import static com.google.common.base.Charsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
-public class NXLoadingTest extends AbstractNXTest {
+public class XmlLoadingTest extends AbstractNXTest {
 
     @Test
     public void loadInvalidXML() throws Exception {
         try {
             parse("<root><unclosedTag></root>");
+
+            fail("Should not have accepted invalid xml");
+        }
+        catch (NX.Ex ex) {
+            assertThat(ex)
+                    .as("Expected exception")
+                    .hasMessage("Failed to initialize xml cursor");
+        }
+    }
+
+    @Test
+    public void loadInvalidXMLFromBytes() throws Exception {
+        try {
+            parse(ByteSource.wrap("<root><unclosedTag></root>".getBytes(UTF_8)));
 
             fail("Should not have accepted invalid xml");
         }

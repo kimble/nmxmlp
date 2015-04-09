@@ -26,7 +26,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
-public class NXInsertTest extends AbstractNXTest {
+public class DataInsertTest extends AbstractNXTest {
 
     @Test
     public void insertCollectionNoNamespaces() throws NX.Ex {

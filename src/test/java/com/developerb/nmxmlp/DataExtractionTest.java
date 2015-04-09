@@ -22,7 +22,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
-public class NXDataExtractionTest extends AbstractNXTest {
+public class DataExtractionTest extends AbstractNXTest {
 
     private final String peopleXml = "<people>" +
             "<person><name>Nasse Nøff</name><age>5</age></person>" +
