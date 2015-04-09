@@ -17,6 +17,7 @@ package com.developerb.nmxmlp;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -137,6 +138,17 @@ public class MissingNodeTest extends AbstractNXTest {
 
         String nameOfBirdNumber11 = pirate.to(10, "bird").to("name").text();
         assertNull(nameOfBirdNumber11);
+    }
+
+    @Test
+    public void insertingCollectionUnderMissingElementDoesNothing() {
+        NX.Cursor root = parse(xml);
+        String before = root.dumpXml();
+
+        NX.Cursor pirate = root.toOptional("pirate"); // Does not exist
+        pirate.insertCollection("bird", Arrays.asList("Polly"), (cursor, input) -> { });
+
+        assertEquals(before, root.dumpXml());
     }
 
 }
