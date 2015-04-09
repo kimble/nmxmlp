@@ -16,7 +16,13 @@
 package com.developerb.nmxmlp;
 
 import com.google.common.io.ByteSource;
+import com.google.common.io.Resources;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,6 +76,30 @@ public class XmlLoadingTest extends AbstractNXTest {
 
         assertNotNull(cursor);
         assertEquals("root", cursor.name());
+    }
+
+    @Test
+    public void failingToReadFromByteSource() throws MalformedURLException {
+        try {
+            parse(new ByteSource() {
+
+                @Override
+                public InputStream openStream() throws IOException {
+                    throw new IllegalStateException("Oups...");
+                }
+
+            });
+        }
+        catch (NX.Ex ex) {
+            assertThat(ex)
+                    .as("Expected exception")
+                    .hasMessage("Failed to initialize xml cursor");
+
+            assertThat(ex.getCause())
+                    .as("Cause of the expected exception")
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("Oups...");
+        }
     }
 
 }
