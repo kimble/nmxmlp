@@ -18,6 +18,7 @@ package com.developerb.nmxmlp;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class MissingNodeTest extends AbstractNXTest {
@@ -60,6 +61,17 @@ public class MissingNodeTest extends AbstractNXTest {
         NX.Cursor pirateLegs = root.toOptional("pirate", "legs"); // Does not exist
 
         assertNull(pirateLegs.text());
+    }
+
+    @Test
+    public void updatingTextOfMissingNodesDoesNothing() {
+        NX.Cursor root = parse(xml);
+        String before = root.dumpXml();
+
+        NX.Cursor pirate = root.toOptional("pirate"); // Does not exist
+        pirate.text("who cares");
+
+        assertEquals(before, root.dumpXml());
     }
 
 }
