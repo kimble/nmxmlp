@@ -12,6 +12,7 @@ libraries seems to be able to do this in a convenient, reliable and straight for
 API doing just that.
 
 [![Build Status](https://drone.io/github.com/kimble/nmxmlp/status.png)](https://drone.io/github.com/kimble/nmxmlp/latest)
+[![Coverage Status](https://coveralls.io/repos/kimble/nmxmlp/badge.svg?branch=master)](https://coveralls.io/r/kimble/nmxmlp?branch=master)
 [![Download](https://api.bintray.com/packages/kim-betti/maven/nmxmlp/images/download.png) ](https://bintray.com/kim-betti/maven/nmxmlp/_latestVersion)
 [![endorse](https://api.coderwall.com/kimble/endorsecount.png)](https://coderwall.com/kimble)
 
