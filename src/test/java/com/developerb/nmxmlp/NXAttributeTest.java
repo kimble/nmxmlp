@@ -19,6 +19,7 @@ import com.google.common.base.Function;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -100,6 +101,15 @@ public class NXAttributeTest extends AbstractNXTest {
         assertThat(age)
                 .as("Extracted age")
                 .isEqualTo(10);
+    }
+
+    @Test
+    public void mapMissingOptionalAttributeReturnsNull() {
+        NX.Cursor root = parse(xml);
+        NX.Cursor person = root.to("person");
+
+        Integer nothing = person.optionalAttr("no-such-attribute").text(Integer::parseInt);
+        assertNull(nothing);
     }
 
 }
