@@ -461,7 +461,7 @@ public class NX {
                 }
             }
 
-            throw new MissingNode(this, tagName, position, childNodes); // Todo... position..
+            throw new MissingNode(this, tagName, position, childNodes); 
         }
 
         private List<NodeCursor> newAncestorList() {
