@@ -14,15 +14,13 @@ API doing just that.
 [![Build Status](https://travis-ci.org/kimble/nmxmlp.svg?branch=master)](https://travis-ci.org/kimble/nmxmlp)
 [![Coverage Status](https://coveralls.io/repos/kimble/nmxmlp/badge.svg?branch=master)](https://coveralls.io/r/kimble/nmxmlp?branch=master)
 
-[![endorse](https://api.coderwall.com/kimble/endorsecount.png)](https://coderwall.com/kimble)
-
-
-
 
 Design goals - In order of importance
 -------------------------------------
 1. Provide a convenient API to extract and update data in small-ish XML documents.
 2. Don't depend on any external XML APIs.
+
+[![endorse](https://api.coderwall.com/kimble/endorsecount.png)](https://coderwall.com/kimble)
 
 Non goals and constraints
 -------------------------
@@ -103,3 +101,9 @@ here is a list of things that I'd like to look into.
 
 1. Implement some real world examples to flush out api mistakes
 2. Further improvements to error messages
+
+
+Roadmap 2.0
+-----------
+1. Java 8
+2. Drop Guava
