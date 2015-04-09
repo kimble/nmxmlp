@@ -17,6 +17,8 @@ package com.developerb.nmxmlp;
 
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -72,6 +74,28 @@ public class MissingNodeTest extends AbstractNXTest {
         pirate.text("who cares");
 
         assertEquals(before, root.dumpXml());
+    }
+
+    @Test
+    public void extractCollectionUnderMissingNode() {
+        NX.Cursor root = parse(xml);
+        NX.Cursor pirate = root.toOptional("pirate");
+        List<Object> birds = pirate.extractCollection("birds", (NX.Cursor cursor) -> null);
+
+        assertThat(birds)
+                .as("Collection extracted from a missing node")
+                .isEmpty();
+    }
+
+    @Test
+    public void extractCollectionUnderMissingNodeRegisteredExtractor() {
+        NX.Cursor root = parse(xml);
+        NX.Cursor pirate = root.toOptional("pirate");
+        List<Integer> birds = pirate.extractCollection("birds", Integer.class);
+
+        assertThat(birds)
+                .as("Collection extracted from a missing node")
+                .isEmpty();
     }
 
 }
