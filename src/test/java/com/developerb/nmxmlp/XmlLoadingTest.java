@@ -53,6 +53,18 @@ public class XmlLoadingTest extends AbstractNXTest {
     }
 
     @Test
+    public void readingNodeWithDuplicateAttributeTriggersException() {
+        try {
+            parse("<people><person name='First' name='Second' /></people>");
+        }
+        catch (NX.Ex ex) {
+            assertThat(ex.getCause())
+                    .as("Expected exception")
+                    .hasMessageContaining("Attribute \"name\" was already specified for element \"person\"");
+        }
+    }
+
+    @Test
     public void loadValidXML() throws Exception {
         NX.Cursor cursor = parse("<root><a /></root>");
 

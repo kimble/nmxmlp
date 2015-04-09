@@ -616,23 +616,17 @@ public class NX {
 
         private Optional<Node> findAttribute(String needle) throws Ambiguous {
             NamedNodeMap attributes = node.getAttributes();
-            Node found = null;
 
             for (int i=0; i<attributes.getLength(); i++) {
                 final Node attribute = attributes.item(i);
                 final String localName = attribute.getLocalName();
 
                 if (localName.equalsIgnoreCase(needle)) {
-                    if (found != null) {
-                        throw new Ambiguous(this, needle);
-                    }
-                    else {
-                        found = attribute;
-                    }
+                    return Optional.of(attribute);
                 }
             }
 
-            return Optional.fromNullable(found);
+            return Optional.absent();
         }
 
         @Override
