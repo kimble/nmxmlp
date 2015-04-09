@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class MissingNodeTest extends AbstractNXTest {
@@ -108,6 +109,16 @@ public class MissingNodeTest extends AbstractNXTest {
         assertNull(age);
     }
 
+
+    @Test
+    public void extractorFromMissingNode() {
+        NX.Cursor root = parse(xml);
+        NX.Cursor pirate = root.toOptional("pirate");
+
+        Integer age = pirate.to("age").extract((NX.Cursor cursor) -> Integer.parseInt(cursor.text()));
+        assertNull(age);
+    }
+
     @Test
     public void iterateUnderMissingNode() {
         NX.Cursor root = parse(xml);
@@ -117,6 +128,15 @@ public class MissingNodeTest extends AbstractNXTest {
         pirate.iterateCollection("birds", (NX.Cursor cursor) -> counter.incrementAndGet());
 
         assertEquals(0, counter.get());
+    }
+
+    @Test
+    public void toNumberedElementUnderMissingNode() {
+        NX.Cursor root = parse(xml);
+        NX.Cursor pirate = root.toOptional("pirate");
+
+        String nameOfBirdNumber11 = pirate.to(10, "bird").to("name").text();
+        assertNull(nameOfBirdNumber11);
     }
 
 }
