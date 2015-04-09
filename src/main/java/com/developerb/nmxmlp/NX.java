@@ -759,6 +759,7 @@ public class NX {
             @Override
             void applyTo(Transformer transformer) {
                 transformer.setOutputProperty(INDENT, "yes");
+                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
             }
         },
 
@@ -766,7 +767,6 @@ public class NX {
             @Override
             void applyTo(Transformer transformer) {
                 transformer.setOutputProperty(OMIT_XML_DECLARATION, "yes");
-                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
             }
         }
 
