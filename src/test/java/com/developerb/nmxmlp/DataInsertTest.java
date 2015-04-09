@@ -15,11 +15,8 @@
  */
 package com.developerb.nmxmlp;
 
-import com.google.common.io.ByteSource;
-import com.google.common.io.Resources;
 import org.junit.Test;
 
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,10 +45,7 @@ public class DataInsertTest extends AbstractNXTest {
 
     @Test
     public void insertNamespacedSvg() throws NX.Ex {
-        URL svgResource = Resources.getResource("svg/simple-svg.xhtml");
-        ByteSource svgByteSource = Resources.asByteSource(svgResource);
-
-        NX.Cursor cursor = parse(svgByteSource);
+        NX.Cursor cursor = parseResource("svg/simple-svg.xhtml");
         NX.Cursor svg = cursor.to("body").to("svg");
 
         List<Circle> circles = Arrays.asList (
@@ -71,10 +65,7 @@ public class DataInsertTest extends AbstractNXTest {
 
     @Test
     public void updateSingleNodeTreeFromObject() throws Exception {
-        URL soapRequestResource = Resources.getResource("soap/soap-request.xml");
-        ByteSource soapRequestSource = Resources.asByteSource(soapRequestResource);
-
-        NX.Cursor soapEnvelope = parse(soapRequestSource);
+        NX.Cursor soapEnvelope = parseResource("soap/soap-request.xml");
 
         NX.Cursor requestHeader = soapEnvelope.to("header", "requestHeader");
         RequestHeader someHeader = new RequestHeader("n-code", "app-name");
@@ -104,6 +95,29 @@ public class DataInsertTest extends AbstractNXTest {
             .as("Generated XML")
             .contains("<root><repeatMe");
     }
+
+    @Test
+    public void insertCollectionMissingPrototypeNode() {
+        NX.Cursor peopleCursor = parse("<people><person name='Prototype' /></people>");
+        Iterable<String> pirates = Arrays.asList("Sabeltann", "Sortebill");
+
+        try {
+            peopleCursor.insertCollection("pirate", pirates, new NX.Inserter<String>() {
+
+                @Override
+                public void insert(NX.Cursor cursor, String input) throws NX.Ex {
+                    // Doesnt matter
+                }
+
+            });
+        }
+        catch (NX.MissingNode expected) {
+            assertThat(expected)
+                    .as("Expected exception")
+                    .hasMessage("people -- Unable to find 'Expected a node named pirate to be used as a prototype'");
+        }
+    }
+
 
     static class RequestHeader {
 

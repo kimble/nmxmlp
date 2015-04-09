@@ -16,8 +16,10 @@
 package com.developerb.nmxmlp;
 
 import com.google.common.io.ByteSource;
+import com.google.common.io.Resources;
 import org.junit.Before;
 
+import java.net.URL;
 
 
 public abstract class AbstractNXTest {
@@ -32,6 +34,13 @@ public abstract class AbstractNXTest {
 
     protected void withNx(NX nx) {
         // A good place for tests to add extractors etc.
+    }
+
+    protected NX.Cursor parseResource(String resourceName) {
+        URL svgResource = Resources.getResource(resourceName);
+        ByteSource svgByteSource = Resources.asByteSource(svgResource);
+
+        return parse(svgByteSource);
     }
 
     protected NX.Cursor parse(String xml) {
