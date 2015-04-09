@@ -18,6 +18,7 @@ package com.developerb.nmxmlp;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -106,4 +107,16 @@ public class MissingNodeTest extends AbstractNXTest {
         Integer age = pirate.to("age").extract(Integer.class);
         assertNull(age);
     }
+
+    @Test
+    public void iterateUnderMissingNode() {
+        NX.Cursor root = parse(xml);
+        NX.Cursor pirate = root.toOptional("pirate");
+
+        AtomicInteger counter = new AtomicInteger(0);
+        pirate.iterateCollection("birds", (NX.Cursor cursor) -> counter.incrementAndGet());
+
+        assertEquals(0, counter.get());
+    }
+
 }
