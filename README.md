@@ -11,7 +11,7 @@ way to extract and updated data in small-ish XML documents. Not too much to ask 
 libraries seems to be able to do this in a convenient, reliable and straight forward way so I created this very non-enterprisy
 API doing just that.
 
-[![Build Status](https://drone.io/github.com/kimble/nmxmlp/status.png)](https://drone.io/github.com/kimble/nmxmlp/latest)
+[![Build Status](https://travis-ci.org/kimble/nmxmlp.svg?branch=master)](https://travis-ci.org/kimble/nmxmlp)
 [![Coverage Status](https://coveralls.io/repos/kimble/nmxmlp/badge.svg?branch=master)](https://coveralls.io/r/kimble/nmxmlp?branch=master)
 [![Download](https://api.bintray.com/packages/kim-betti/maven/nmxmlp/images/download.png) ](https://bintray.com/kim-betti/maven/nmxmlp/_latestVersion)
 [![endorse](https://api.coderwall.com/kimble/endorsecount.png)](https://coderwall.com/kimble)
