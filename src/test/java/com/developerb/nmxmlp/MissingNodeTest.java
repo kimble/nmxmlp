@@ -151,4 +151,15 @@ public class MissingNodeTest extends AbstractNXTest {
         assertEquals(before, root.dumpXml());
     }
 
+    @Test
+    public void updatingNodeUnderMissingElementDoesNothing() {
+        NX.Cursor root = parse(xml);
+        String before = root.dumpXml();
+
+        NX.Cursor pirate = root.toOptional("pirate"); // Does not exist
+        pirate.to(2, "bird").update("Polly", (cursor, input) -> { });
+
+        assertEquals(before, root.dumpXml());
+    }
+
 }

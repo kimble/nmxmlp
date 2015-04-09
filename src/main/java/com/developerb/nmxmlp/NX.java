@@ -363,9 +363,7 @@ public class NX {
         public <R> void insertCollection(String prototype, Iterable<R> people, Inserter<R> inserter) throws Ex { }
 
         @Override
-        public <R> void update(R payload, Inserter<R> inserter) {
-            throw new UnsupportedOperationException("Can't insert in empty cursor");
-        }
+        public <R> void update(R payload, Inserter<R> inserter) {  }
 
     }
 
