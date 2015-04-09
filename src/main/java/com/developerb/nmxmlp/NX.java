@@ -58,7 +58,7 @@ public class NX {
     private final TransformerFactory transformerFactory;
     private final Map<Class<?>, Extractor<?>> extractors = Maps.newHashMap();
 
-    public NX() throws Ex {
+    public NX() {
         transformerFactory = TransformerFactory.newInstance();
         docBuilderFactory = DocumentBuilderFactory.newInstance();
 
