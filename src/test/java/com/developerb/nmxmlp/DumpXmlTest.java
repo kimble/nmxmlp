@@ -17,8 +17,10 @@ package com.developerb.nmxmlp;
 
 import org.junit.Test;
 
+import static com.developerb.nmxmlp.NX.Feature.DUMP_INDENTED_XML;
 import static com.developerb.nmxmlp.NX.Feature.DUMP_WITHOUT_XML_DECLARATION;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 public class DumpXmlTest extends AbstractNXTest {
 
@@ -26,18 +28,30 @@ public class DumpXmlTest extends AbstractNXTest {
 
     @Test
     public void dumpXmlWithoutXmlDeclaration() throws Exception {
-        NX nx = new NX(DUMP_WITHOUT_XML_DECLARATION);
+        NX nx = new NX();
         NX.Cursor root = nx.from(xml);
 
-        assertEquals("<a><b><c>value</c></b></a>", root.dumpXml());
+        assertEquals("<a><b><c>value</c></b></a>", root.dumpXml(DUMP_WITHOUT_XML_DECLARATION));
     }
 
     @Test
     public void dumpXmlFromChildNode() throws Exception {
-        NX nx = new NX(DUMP_WITHOUT_XML_DECLARATION);
+        NX nx = new NX();
         NX.Cursor root = nx.from(xml);
 
-        assertEquals("<b><c>value</c></b>", root.to("b").dumpXml());
+        assertEquals("<b><c>value</c></b>", root.to("b").dumpXml(DUMP_WITHOUT_XML_DECLARATION));
+    }
+
+    @Test
+    public void dumpIndentedXml() throws Exception {
+        NX nx = new NX();
+        NX.Cursor root = nx.from(xml);
+
+        String xml = root.to("b").dumpXml(DUMP_WITHOUT_XML_DECLARATION, DUMP_INDENTED_XML);
+        assertThat(xml)
+                .as("Dumped xml")
+                .containsSequence("    <c>value")
+                .isXmlEqualTo("<b><c>value</c></b>");
     }
 
     @Test

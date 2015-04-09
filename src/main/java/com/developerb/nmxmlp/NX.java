@@ -36,7 +36,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -55,22 +54,18 @@ import static javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION;
 public class NX {
 
     private final DocumentBuilderFactory docBuilderFactory;
-    private final Transformer transformer;
+    private final TransformerFactory transformerFactory;
     private final Map<Class<?>, Extractor<?>> extractors = Maps.newHashMap();
 
-    public NX(Feature... features) throws Ex {
+    public NX() throws Ex {
         try {
-            final Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformerFactory = TransformerFactory.newInstance();
+
             final DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 
             docBuilderFactory.setNamespaceAware(true); // Without this "localName" won't work for namespaced documents
 
-            for (Feature feature : features) {
-                feature.applyTo(transformer);
-            }
-
             this.docBuilderFactory = docBuilderFactory;
-            this.transformer = transformer;
 
             extractors.put(Integer.class, new IntegerExtractor());
             extractors.put(Long.class, new LongExtractor());
@@ -206,7 +201,7 @@ public class NX {
 
         Cursor text(String updatedText);
 
-        String dumpXml() throws Ex;
+        String dumpXml(Feature... features) throws Ex;
 
         Attribute attr(String name) throws Ambiguous, MissingAttribute;
 
@@ -345,7 +340,7 @@ public class NX {
         }
 
         @Override
-        public String dumpXml() throws Ex {
+        public String dumpXml(Feature... features) throws Ex {
             throw new UnsupportedOperationException("Can't dump empty cursor");
         }
 
@@ -675,12 +670,16 @@ public class NX {
         }
 
         @Override
-        public String dumpXml() throws Ex {
+        public String dumpXml(Feature... features) throws Ex {
             try {
                 StringWriter sw = new StringWriter();
-                synchronized (transformer) {
-                    transformer.transform(new DOMSource(node), new StreamResult(sw));
+                Transformer transformer = transformerFactory.newTransformer();
+
+                for (Feature feature : features) {
+                    feature.applyTo(transformer);
                 }
+
+                transformer.transform(new DOMSource(node), new StreamResult(sw));
 
                 return sw.toString();
             }
@@ -767,6 +766,7 @@ public class NX {
             @Override
             void applyTo(Transformer transformer) {
                 transformer.setOutputProperty(OMIT_XML_DECLARATION, "yes");
+                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
             }
         }
 
