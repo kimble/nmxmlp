@@ -672,13 +672,13 @@ public class NX {
         @Override
         public String dumpXml(Feature... features) throws Ex {
             try {
-                StringWriter sw = new StringWriter();
                 Transformer transformer = transformerFactory.newTransformer();
 
                 for (Feature feature : features) {
                     feature.applyTo(transformer);
                 }
 
+                StringWriter sw = new StringWriter();
                 transformer.transform(new DOMSource(node), new StreamResult(sw));
 
                 return sw.toString();

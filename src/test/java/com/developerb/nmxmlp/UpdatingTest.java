@@ -22,7 +22,7 @@ import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
 
-public class NXUpdatingTest extends AbstractNXTest {
+public class UpdatingTest extends AbstractNXTest {
 
     @Test
     public void updateText() throws Exception {
