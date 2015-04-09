@@ -98,4 +98,12 @@ public class MissingNodeTest extends AbstractNXTest {
                 .isEmpty();
     }
 
+    @Test
+    public void extractFromMissingNode() {
+        NX.Cursor root = parse(xml);
+        NX.Cursor pirate = root.toOptional("pirate");
+
+        Integer age = pirate.to("age").extract(Integer.class);
+        assertNull(age);
+    }
 }
