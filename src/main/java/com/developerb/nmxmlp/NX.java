@@ -59,23 +59,17 @@ public class NX {
     private final Map<Class<?>, Extractor<?>> extractors = Maps.newHashMap();
 
     public NX() throws Ex {
-        try {
-            transformerFactory = TransformerFactory.newInstance();
+        transformerFactory = TransformerFactory.newInstance();
+        docBuilderFactory = DocumentBuilderFactory.newInstance();
 
-            final DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        // Without this "localName" won't work for namespaced documents
+        docBuilderFactory.setNamespaceAware(true);
 
-            docBuilderFactory.setNamespaceAware(true); // Without this "localName" won't work for namespaced documents
-
-            this.docBuilderFactory = docBuilderFactory;
-
-            extractors.put(Integer.class, new IntegerExtractor());
-            extractors.put(Long.class, new LongExtractor());
-            extractors.put(Float.class, new FloatExtractor());
-            extractors.put(Double.class, new DoubleExtractor());
-        }
-        catch (Exception ex) {
-            throw new Ex("Failed to initialize library", ex);
-        }
+        // Default extractors
+        extractors.put(Integer.class, new IntegerExtractor());
+        extractors.put(Long.class, new LongExtractor());
+        extractors.put(Float.class, new FloatExtractor());
+        extractors.put(Double.class, new DoubleExtractor());
     }
 
     public <R> NX registerExtractor(Class<R> type, Extractor<R> extractor) {
