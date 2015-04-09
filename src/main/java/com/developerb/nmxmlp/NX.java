@@ -461,7 +461,7 @@ public class NX {
                 }
             }
 
-            throw new MissingNode(this, tagName, childNodes); // Todo... position..
+            throw new MissingNode(this, tagName, position, childNodes); // Todo... position..
         }
 
         private List<NodeCursor> newAncestorList() {
@@ -724,6 +724,10 @@ public class NX {
     }
 
     public static class MissingNode extends Ex {
+        MissingNode(Cursor cursor, String needle, int position, NodeList childNodes) {
+            super(cursor, "Unable to find '" + needle + "' with index " + position + " - Did you mean: " + summarize(childNodes) + "?");
+        }
+
         MissingNode(Cursor cursor, String needle, NodeList childNodes) {
             super(cursor, "Unable to find '" + needle + "' - Did you mean: " + summarize(childNodes) + "?");
         }

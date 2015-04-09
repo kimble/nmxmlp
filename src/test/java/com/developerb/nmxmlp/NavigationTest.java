@@ -190,4 +190,18 @@ public class NavigationTest extends AbstractNXTest {
         }
     }
 
+    @Test
+    public void navigatingToMissingNodeIndex() {
+        NX.Cursor message = parse(headersXml);
+
+        try {
+            message.to(2, "header");
+        }
+        catch (NX.MissingNode ex) {
+            assertThat(ex)
+                    .as("Expected exception")
+                    .hasMessage("headers -- Unable to find 'header' with index 2 - Did you mean: header?");
+        }
+    }
+
 }
