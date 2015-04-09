@@ -46,8 +46,27 @@ public class NXDataExtractionTest extends AbstractNXTest {
     @Test
     public void extractDouble() throws Exception {
         NX.Cursor root = parse("<root><double>3.14159265</double></root>");
+        Double extracted = root.to("double").extract(Double.class);
 
-        assertEquals(Math.PI, root.extract(Double.class), 0.00001);
+        assertEquals(extracted, extracted, 0.00001);
+    }
+
+    @Test
+    public void extractFloat() throws Exception {
+        NX.Cursor root = parse("<root><float>3.14159265</float></root>");
+        Float extracted = root.to("float").extract(Float.class);
+
+        assertEquals(extracted, extracted, 0.00001);
+    }
+
+    @Test
+    public void extractLong() throws Exception {
+        NX.Cursor root = parse("<root><long>314159265</long></root>");
+        Long extracted = root.to("long").extract(Long.class);
+
+        assertThat(extracted)
+                .as("Extracted long")
+                .isEqualTo(314159265);
     }
 
     @Test
