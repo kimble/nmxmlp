@@ -96,10 +96,11 @@ publishing {
     }
 }
 
-if (hasProperty("bintrayUser") && hasProperty("bintrayKey")) {
+
+if (System.getenv("BINTRAY_USER") && System.getenv("BINTRAY_KEY")) {
     bintray {
-        user = bintrayUser
-        key = bintrayKey
+        user = System.getenv("BINTRAY_USER")
+        key = System.getenv("BINTRAY_KEY")
 
         publications = [ 'mavenJava' ] // see publications closure
 
