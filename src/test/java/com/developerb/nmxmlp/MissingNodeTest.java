@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -71,12 +72,12 @@ public class MissingNodeTest extends AbstractNXTest {
     @Test
     public void updatingTextOfMissingNodesDoesNothing() {
         NX.Cursor root = parse(xml);
-        String before = root.dumpXml();
+        String before = root.dumpXml(UTF_8);
 
         NX.Cursor pirate = root.toOptional("pirate"); // Does not exist
         pirate.text("who cares");
 
-        assertEquals(before, root.dumpXml());
+        assertEquals(before, root.dumpXml(UTF_8));
     }
 
     @Test
@@ -143,23 +144,24 @@ public class MissingNodeTest extends AbstractNXTest {
     @Test
     public void insertingCollectionUnderMissingElementDoesNothing() {
         NX.Cursor root = parse(xml);
-        String before = root.dumpXml();
+        String before = root.dumpXml(UTF_8);
 
         NX.Cursor pirate = root.toOptional("pirate"); // Does not exist
         pirate.insertCollection("bird", Arrays.asList("Polly"), (cursor, input) -> { });
 
-        assertEquals(before, root.dumpXml());
+        assertEquals(before, root.dumpXml(UTF_8));
     }
 
     @Test
     public void updatingNodeUnderMissingElementDoesNothing() {
         NX.Cursor root = parse(xml);
-        String before = root.dumpXml();
+        String before = root.dumpXml(UTF_8);
 
         NX.Cursor pirate = root.toOptional("pirate"); // Does not exist
-        pirate.to(2, "bird").update("Polly", (cursor, input) -> { });
+        pirate.to(2, "bird").update("Polly", (cursor, input) -> {
+        });
 
-        assertEquals(before, root.dumpXml());
+        assertEquals(before, root.dumpXml(UTF_8));
     }
 
 }

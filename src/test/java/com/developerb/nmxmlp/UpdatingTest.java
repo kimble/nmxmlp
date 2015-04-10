@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import java.net.URL;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 
 public class UpdatingTest extends AbstractNXTest {
@@ -29,7 +30,7 @@ public class UpdatingTest extends AbstractNXTest {
         NX.Cursor person = parse("<person><name>Donald Duck</name><age>30</age></person>");
         person.to("name").text("Mikke Mus");
 
-        NX.Cursor reloaded = parse(person.dumpXml());
+        NX.Cursor reloaded = parse(person.dumpXml(UTF_8));
         assertEquals("Mikke Mus", reloaded.to("name").text());
     }
 
@@ -43,7 +44,7 @@ public class UpdatingTest extends AbstractNXTest {
                 .to("networkcode")
                 .text("my-network-code");
 
-        NX.Cursor reloadedEnvelope = parse(envelope.dumpXml());
+        NX.Cursor reloadedEnvelope = parse(envelope.dumpXml(UTF_8));
         assertEquals("my-network-code", reloadedEnvelope.to("header")
                 .to("requestheader")
                 .to("networkcode")
@@ -59,7 +60,7 @@ public class UpdatingTest extends AbstractNXTest {
 
         envelope.to("header", "requestheader").attr("mustunderstand").text("1");
 
-        NX.Cursor reloadedEnvelope = parse(envelope.dumpXml());
+        NX.Cursor reloadedEnvelope = parse(envelope.dumpXml(UTF_8));
         assertEquals("1", reloadedEnvelope.to("header", "requestheader").attr("mustunderstand").text());
     }
 

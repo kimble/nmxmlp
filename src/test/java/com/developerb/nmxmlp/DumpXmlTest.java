@@ -19,6 +19,8 @@ import org.junit.Test;
 
 import static com.developerb.nmxmlp.NX.Feature.DUMP_INDENTED_XML;
 import static com.developerb.nmxmlp.NX.Feature.DUMP_WITHOUT_XML_DECLARATION;
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
@@ -31,7 +33,7 @@ public class DumpXmlTest extends AbstractNXTest {
         NX nx = new NX();
         NX.Cursor root = nx.from(xml);
 
-        assertEquals("<a><b><c>value</c></b></a>", root.dumpXml(DUMP_WITHOUT_XML_DECLARATION));
+        assertEquals("<a><b><c>value</c></b></a>", root.dumpXml(UTF_8, DUMP_WITHOUT_XML_DECLARATION));
     }
 
     @Test
@@ -39,7 +41,7 @@ public class DumpXmlTest extends AbstractNXTest {
         NX nx = new NX();
         NX.Cursor root = nx.from(xml);
 
-        assertEquals("<b><c>value</c></b>", root.to("b").dumpXml(DUMP_WITHOUT_XML_DECLARATION));
+        assertEquals("<b><c>value</c></b>", root.to("b").dumpXml(UTF_8, DUMP_WITHOUT_XML_DECLARATION));
     }
 
     @Test
@@ -47,7 +49,7 @@ public class DumpXmlTest extends AbstractNXTest {
         NX nx = new NX();
         NX.Cursor root = nx.from(xml);
 
-        String xml = root.to("b").dumpXml(DUMP_WITHOUT_XML_DECLARATION, DUMP_INDENTED_XML);
+        String xml = root.to("b").dumpXml(UTF_8, DUMP_WITHOUT_XML_DECLARATION, DUMP_INDENTED_XML);
         assertThat(xml)
                 .as("Dumped xml")
                 .containsSequence("    <c>value")
@@ -58,7 +60,20 @@ public class DumpXmlTest extends AbstractNXTest {
     public void dumpXmlWithXmlDeclaration() throws Exception {
         NX.Cursor root = parse(xml);
 
-        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><a><b><c>value</c></b></a>", root.dumpXml());
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><a><b><c>value</c></b></a>", root.dumpXml(UTF_8));
+    }
+
+    @Test
+    public void dumpXmlLatin1() {
+        NX.Cursor root = parse(xml);
+
+        String utf8 = root.dumpXml(UTF_8);
+        String latin1 = root.dumpXml(ISO_8859_1);
+
+        assertThat(latin1)
+                .as("Latin1 encoded xml")
+                .isNotEqualTo(utf8)
+                .containsSequence("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
     }
 
 }
