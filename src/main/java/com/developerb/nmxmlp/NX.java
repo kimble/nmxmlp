@@ -15,7 +15,10 @@
  */
 package com.developerb.nmxmlp;
 
-import com.google.common.base.*;
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -37,6 +40,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -194,9 +198,9 @@ public class NX {
 
         Cursor text(String updatedText);
 
-        String dumpXml(Feature... features) throws Ex;
+        String dumpXml(Charset charset, Feature... features) throws Ex;
 
-        void dumpXml(OutputStream output, Feature... features) throws Ex;
+        void dumpXml(OutputStream output, Charset charset, Feature... features) throws Ex;
 
         Attribute attr(String name) throws Ambiguous, MissingAttribute;
 
@@ -341,12 +345,12 @@ public class NX {
         }
 
         @Override
-        public String dumpXml(Feature... features) throws Ex {
+        public String dumpXml(Charset charset, Feature... features) throws Ex {
             throw new UnsupportedOperationException("Can't dump empty cursor");
         }
 
         @Override
-        public void dumpXml(OutputStream output, Feature... features) throws Ex {
+        public void dumpXml(OutputStream output, Charset charset, Feature... features) throws Ex {
             throw new UnsupportedOperationException("Can't dump empty cursor");
         }
 
@@ -676,18 +680,18 @@ public class NX {
         }
 
         @Override
-        public String dumpXml(Feature... features) throws Ex {
+        public String dumpXml(Charset charset, Feature... features) throws Ex {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
-            dumpXml(output, features);
+            dumpXml(output, charset, features);
 
-            return new String(output.toByteArray(), Charsets.UTF_8);
+            return new String(output.toByteArray(), charset);
         }
 
         @Override
-        public void dumpXml(OutputStream output, Feature... features) throws Ex {
+        public void dumpXml(OutputStream output, Charset charset, Feature... features) throws Ex {
             try {
                 Transformer transformer = transformerFactory.newTransformer();
-                Feature.DUMP_UTF_8.applyTo(transformer);
+                transformer.setOutputProperty(OutputKeys.ENCODING, charset.name());
 
                 for (Feature feature : features) {
                     feature.applyTo(transformer);
@@ -771,15 +775,6 @@ public class NX {
     }
 
     public static enum Feature {
-
-        DUMP_UTF_8 {
-
-            @Override
-            void applyTo(Transformer transformer) {
-                transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            }
-
-        },
 
         DUMP_INDENTED_XML {
             @Override

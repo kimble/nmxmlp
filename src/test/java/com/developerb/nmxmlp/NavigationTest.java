@@ -17,6 +17,7 @@ package com.developerb.nmxmlp;
 
 import org.junit.Test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -173,7 +174,7 @@ public class NavigationTest extends AbstractNXTest {
         NX.Cursor missingNode = message.to("header").toOptional("no-such-node");
 
         try {
-            missingNode.dumpXml();
+            missingNode.dumpXml(UTF_8);
             fail("Dumping xml from a missing node doesn't make sense");
         }
         catch (UnsupportedOperationException ex) {

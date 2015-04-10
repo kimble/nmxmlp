@@ -20,6 +20,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
@@ -37,7 +38,7 @@ public class DataInsertTest extends AbstractNXTest {
         peopleCursor.insertCollection("person", people, new PersonInserter());
 
 
-        NX.Cursor reloadedPeopleCursor = parse(peopleCursor.dumpXml());
+        NX.Cursor reloadedPeopleCursor = parse(peopleCursor.dumpXml(UTF_8));
         List<Person> extractedPeople = reloadedPeopleCursor.extractCollection("person", new PersonExtractor());
 
         assertEquals(people, extractedPeople);
@@ -56,7 +57,7 @@ public class DataInsertTest extends AbstractNXTest {
 
         svg.insertCollection("circle", circles, new CircleInserter());
 
-        assertThat(cursor.dumpXml())
+        assertThat(cursor.dumpXml(UTF_8))
                 .as("XML output")
                 .contains("<svg:circle cx=\"100\" cy=\"100\" fill=\"red\" r=\"20\"/>")
                 .contains("<svg:circle cx=\"50\" cy=\"50\" fill=\"red\" r=\"25\"/>")
@@ -71,7 +72,7 @@ public class DataInsertTest extends AbstractNXTest {
         RequestHeader someHeader = new RequestHeader("n-code", "app-name");
         requestHeader.update(someHeader, new SoapRequestHeaderInserter());
 
-        NX.Cursor reloadedSoapEnvelope = parse(soapEnvelope.dumpXml());
+        NX.Cursor reloadedSoapEnvelope = parse(soapEnvelope.dumpXml(UTF_8));
         assertEquals("n-code", reloadedSoapEnvelope.to("header", "requestHeader", "networkCode").text());
         assertEquals("app-name", reloadedSoapEnvelope.to("header", "requestHeader", "applicationName").text());
     }
@@ -81,17 +82,9 @@ public class DataInsertTest extends AbstractNXTest {
     public void insertedElementsInConnectionShouldBePositionedInTheSamePlaceAsThePrototypeElement() throws NX.Ex {
         NX.Cursor root = parse("<root><repeatMe /><fixed>should-not-move</fixed></root>");
 
-        root.insertCollection("repeatMe", Arrays.asList("hei", "på", "deg"), new NX.Inserter<String>() {
+        root.insertCollection("repeatMe", Arrays.asList("hei", "på", "deg"), NX.Cursor::text);
 
-            @Override
-            public void insert(NX.Cursor cursor, String input) throws NX.Ex {
-                cursor.text(input);
-            }
-
-        });
-
-        String xml = root.dumpXml();
-        assertThat(xml)
+        assertThat(root.dumpXml(UTF_8))
             .as("Generated XML")
             .contains("<root><repeatMe");
     }
@@ -102,13 +95,8 @@ public class DataInsertTest extends AbstractNXTest {
         Iterable<String> pirates = Arrays.asList("Sabeltann", "Sortebill");
 
         try {
-            peopleCursor.insertCollection("pirate", pirates, new NX.Inserter<String>() {
-
-                @Override
-                public void insert(NX.Cursor cursor, String input) throws NX.Ex {
-                    // Doesnt matter
-                }
-
+            peopleCursor.insertCollection("pirate", pirates, (cursor, input) -> {
+                // Doesnt matter
             });
         }
         catch (NX.MissingNode expected) {
