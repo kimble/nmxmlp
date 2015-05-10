@@ -94,15 +94,6 @@ simple services to expose.
 
 
 
-Roadmap 1.0
------------
-This library has already solved my problems so I may never get around to improve it, but if I do,
-here is a list of things that I'd like to look into.
-
-1. Implement some real world examples to flush out api mistakes
-2. Further improvements to error messages
-
-
 Roadmap 2.0
 -----------
 1. Java 8
