@@ -18,7 +18,7 @@ apply plugin: 'com.github.kt3k.coveralls'
 
 
 group = 'com.developerb.nmxlp' // Yeah I know about the typo, but hard to change now that it's in JCenter..
-version = '1.0.0'
+version = '1.0.5'
 
 compileJava {
     sourceCompatibility = 1.6
