@@ -190,6 +190,8 @@ public class NX {
 
         void iterateCollection(String needle, Iterator extractor) throws Ex;
 
+        void remove() throws Ex;
+
         String text();
 
         String describePath();
@@ -370,6 +372,9 @@ public class NX {
         @Override
         public <R> void update(R payload, Inserter<R> inserter) {  }
 
+        @Override
+        public void remove() throws Ex { }
+
     }
 
 
@@ -495,6 +500,11 @@ public class NX {
             }
 
             return count;
+        }
+
+        @Override
+        public void remove() throws Ex {
+            node.getParentNode().removeChild(node);
         }
 
         @Override
