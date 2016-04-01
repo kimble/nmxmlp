@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1'
     }
 }
@@ -18,7 +18,7 @@ apply plugin: 'com.github.kt3k.coveralls'
 
 
 group = 'com.developerb.nmxlp' // Yeah I know about the typo, but hard to change now that it's in JCenter..
-version = '1.1.0'
+version = '1.1.1'
 
 compileJava {
     sourceCompatibility = 1.6
@@ -102,7 +102,10 @@ if (System.getenv("BINTRAY_USER") && System.getenv("BINTRAY_KEY")) {
         user = System.getenv("BINTRAY_USER")
         key = System.getenv("BINTRAY_KEY")
 
-        publications = [ 'mavenJava' ] // see publications closure
+        publications = [ 'mavenJava' ]
+
+        dryRun = false
+        publish = true
 
         pkg { //package will be created if does not exist
             repo = 'maven'
@@ -112,11 +115,12 @@ if (System.getenv("BINTRAY_USER") && System.getenv("BINTRAY_KEY")) {
             websiteUrl = 'https://github.com/kimble/nmxmlp'
             issueTrackerUrl = 'https://github.com/kimble/nmxmlp/issues'
             vcsUrl = 'https://github.com/kimble/nmxmlp.git'
+            githubRepo = 'kimble/nmxmlp'
+            githubReleaseNotesFile = 'README.md'
 
             licenses = ['Apache-2.0']
             labels = ['java', 'xml', 'library']
 
-            publish = true
             publicDownloadNumbers = true
         }
     }
@@ -127,5 +131,5 @@ else {
 
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.4'
+    gradleVersion = '2.12'
 }
