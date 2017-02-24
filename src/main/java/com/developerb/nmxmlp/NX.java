@@ -28,9 +28,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -38,6 +40,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -91,10 +94,16 @@ public class NX {
     }
 
     public Cursor from(ByteSource source) throws Ex {
-        InputStream stream = null;
-
         try {
-            stream = source.openStream();
+            return from(source.openStream());
+        }
+        catch (Exception ex) {
+            throw new Ex("Failed to initialize xml cursor", ex);
+        }
+    }
+
+    public Cursor from(InputStream stream) throws Ex {
+        try {
             final DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
             final Document document = docBuilder.parse(stream);
             return new NodeCursor(document.getDocumentElement());

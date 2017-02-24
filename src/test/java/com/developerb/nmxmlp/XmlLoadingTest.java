@@ -64,7 +64,7 @@ public class XmlLoadingTest extends AbstractNXTest {
             parse("<people><person name='First' name='Second' /></people>");
         }
         catch (NX.Ex ex) {
-            assertThat(ex.getCause())
+            assertThat(ex.getCause().getCause())
                     .as("Expected exception")
                     .hasMessageContaining("Attribute \"name\" was already specified for element \"person\"");
         }
