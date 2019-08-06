@@ -18,7 +18,7 @@ apply plugin: 'com.github.kt3k.coveralls'
 
 
 group = 'com.developerb.nmxlp' // Yeah I know about the typo, but hard to change now that it's in JCenter..
-version = '1.1.2'
+version = '1.2.0'
 
 compileJava {
     sourceCompatibility = 1.6
@@ -60,7 +60,7 @@ jacocoTestReport {
 }
 
 dependencies {
-    compile 'com.google.guava:guava:21.0'
+    compile 'com.google.guava:guava:28.0-jre'
 
     testCompile 'junit:junit:4.12',
             'org.assertj:assertj-core:1.7.1'
@@ -127,9 +127,4 @@ if (System.getenv("BINTRAY_USER") && System.getenv("BINTRAY_KEY")) {
 }
 else {
     logger.debug("Set bintrayUser and bintrayKey in ~/.gradle/gradle.properties to enable bintray upload")
-}
-
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.12'
 }

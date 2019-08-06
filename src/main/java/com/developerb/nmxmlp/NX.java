@@ -24,15 +24,10 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteSource;
 import com.google.common.io.Closeables;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import org.w3c.dom.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -40,7 +35,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -106,7 +100,7 @@ public class NX {
         try {
             final DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
             final Document document = docBuilder.parse(stream);
-            return new NodeCursor(document.getDocumentElement());
+            return new NodeCursor(document, document.getDocumentElement());
         }
         catch (Exception ex) {
             throw new Ex("Failed to initialize xml cursor", ex);
@@ -186,6 +180,10 @@ public class NX {
         Cursor toOptional(String firstNeedle, String... remainingNeedles) throws Ex;
 
         Cursor to(int position, String tagName) throws MissingNode;
+
+        Cursor append(String nodeName) throws Ex;
+
+        void setAttr(String name, String value) throws Ex;
 
         int count(String tagName);
 
@@ -356,6 +354,11 @@ public class NX {
         }
 
         @Override
+        public void setAttr(String name, String value) throws Ex {
+            throw new UnsupportedOperationException("Can't insert attribute on empty cursor");
+        }
+
+        @Override
         public String dumpXml(Charset charset, Feature... features) throws Ex {
             throw new UnsupportedOperationException("Can't dump empty cursor");
         }
@@ -363,6 +366,11 @@ public class NX {
         @Override
         public void dumpXml(OutputStream output, Charset charset, Feature... features) throws Ex {
             throw new UnsupportedOperationException("Can't dump empty cursor");
+        }
+
+        @Override
+        public Cursor append(String nodeName) throws Ex {
+            throw new UnsupportedOperationException("Can't insert child node under empty cursor");
         }
 
         @Override
@@ -392,16 +400,18 @@ public class NX {
         private final Node node;
         private final List<NodeCursor> ancestors;
         private final int index;
+        private final Document document;
 
-        NodeCursor(Node node) {
-            this(new ArrayList<NodeCursor>(), node, 0);
+        NodeCursor(Document document, Node node) {
+            this(document, new ArrayList<NodeCursor>(), node, 0);
         }
 
-        NodeCursor(List<NodeCursor> ancestors, Node node, int index) {
+        NodeCursor(Document document, List<NodeCursor> ancestors, Node node, int index) {
             Preconditions.checkNotNull(ancestors, "Ancestors can't be null");
             Preconditions.checkArgument(index >= 0, "Index must be greater or equal to zero");
             Preconditions.checkNotNull(node, "Node can't be null");
 
+            this.document = document;
             this.ancestors = ancestors;
             this.index = index;
             this.node = node;
@@ -417,6 +427,18 @@ public class NX {
             return cursor;
         }
 
+        @Override
+        public void setAttr(String name, String value) throws Ex {
+            ((Element) node).setAttribute(name, value);
+        }
+
+        @Override
+        public Cursor append(String tagName) throws Ex {
+            Element element = document.createElement(tagName);
+            Node newNode = node.appendChild(element);
+
+            return new NodeCursor(document, newNode);
+        }
 
         @Override
         public Cursor toOptional(String firstNeedle, String... remainingNeedles) throws Ex {
@@ -439,7 +461,7 @@ public class NX {
 
             if (found.isPresent()) {
                 final List<NodeCursor> newAncestorList = newAncestorList();
-                return new NodeCursor(newAncestorList, found.get(), 0);
+                return new NodeCursor(document, newAncestorList, found.get(), 0);
             }
             else {
                 throw new MissingNode(this, tagName, node.getChildNodes());
@@ -480,7 +502,7 @@ public class NX {
 
                     if (count == position + 1) {
                         final List<NodeCursor> newAncestorList = newAncestorList();
-                        return new NodeCursor(newAncestorList, childNode, position);
+                        return new NodeCursor(document, newAncestorList, childNode, position);
                     }
                 }
             }
@@ -574,7 +596,7 @@ public class NX {
 
                 if (localName != null && localName.equalsIgnoreCase(needle)) {
                     final List<NodeCursor> newAncestorList = newAncestorList();
-                    final Cursor cursor = new NodeCursor(newAncestorList, childNode, count++);
+                    final Cursor cursor = new NodeCursor(document, newAncestorList, childNode, count++);
                     iterator.on(cursor);
                 }
             }
@@ -592,7 +614,7 @@ public class NX {
                 int count = 0;
                 for (I input : inputCollection) {
                     final Node inputNode = prototype.cloneNode(true);
-                    final Cursor inputCursor = new NodeCursor(newAncestorList(), inputNode, count++);
+                    final Cursor inputCursor = new NodeCursor(document, newAncestorList(), inputNode, count++);
                     inserter.insert(inputCursor, input);
 
                     node.insertBefore(inputNode, originalPrototype);
@@ -729,15 +751,15 @@ public class NX {
 
     public static class Ex extends RuntimeException {
 
-        protected Ex(Cursor cursor, String message) {
+        Ex(Cursor cursor, String message) {
             super(cursor.describePath() + " -- " + message);
         }
 
-        protected Ex(Cursor cursor, String message, Throwable cause) {
+        Ex(Cursor cursor, String message, Throwable cause) {
             super(cursor.describePath() + " -- " + message, cause);
         }
 
-        protected Ex(String message, Throwable cause) {
+        Ex(String message, Throwable cause) {
             super(message, cause);
         }
 
@@ -745,7 +767,7 @@ public class NX {
 
     public static class NoExtractor extends Ex {
 
-        public NoExtractor(Cursor cursor, Class<?> type) {
+        NoExtractor(Cursor cursor, Class<?> type) {
             super(cursor, "No extractor for: " + type.getName());
         }
 
@@ -768,7 +790,7 @@ public class NX {
             super(cursor, "Unable to find '" + needle + "' - Did you mean: " + summarize(childNodes) + "?");
         }
 
-        public MissingNode(Cursor cursor, String needle) {
+        MissingNode(Cursor cursor, String needle) {
             super(cursor, "Unable to find '" + needle + "'");
         }
 
@@ -793,7 +815,7 @@ public class NX {
         }
     }
 
-    public static enum Feature {
+    public enum Feature {
 
         DUMP_INDENTED_XML {
             @Override
