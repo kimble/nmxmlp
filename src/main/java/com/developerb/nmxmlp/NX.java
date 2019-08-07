@@ -205,6 +205,8 @@ public class NX {
 
         String name();
 
+        void removeAttr(String name) throws Ex;
+
         Cursor text(String updatedText);
 
         String dumpXml(Charset charset, Feature... features) throws Ex;
@@ -304,7 +306,7 @@ public class NX {
 
         private final NodeCursor lastKnownCursor;
 
-        public EmptyCursor(NodeCursor lastKnownCursor) {
+        EmptyCursor(NodeCursor lastKnownCursor) {
             this.lastKnownCursor = lastKnownCursor;
         }
 
@@ -352,6 +354,10 @@ public class NX {
         public String describePath() {
             return lastKnownCursor.describePath() + " >> ???";
         }
+
+        @Override
+        public void removeAttr(String name) throws Ex { }
+
 
         @Override
         public void setAttr(String name, String value) throws Ex {
@@ -454,7 +460,10 @@ public class NX {
             return cursor;
         }
 
-
+        @Override
+        public void removeAttr(String name) throws Ex {
+            node.getAttributes().removeNamedItem(name);
+        }
 
         private NodeCursor to(String tagName) throws Ex {
             final Optional<Node> found = findSingleNode(tagName);

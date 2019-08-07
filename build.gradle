@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1'
     }
 }
@@ -18,7 +18,7 @@ apply plugin: 'com.github.kt3k.coveralls'
 
 
 group = 'com.developerb.nmxlp' // Yeah I know about the typo, but hard to change now that it's in JCenter..
-version = '1.2.0'
+version = '1.2.1'
 
 compileJava {
     sourceCompatibility = 1.6

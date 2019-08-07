@@ -15,8 +15,9 @@
  */
 package com.developerb.nmxmlp;
 
-import com.google.common.base.Function;
 import org.junit.Test;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
@@ -27,9 +28,20 @@ public class AttributeTest extends AbstractNXTest {
     private final String xml = "<root><person firstName='Nasse' lastName='Nøff' age='10' /></root>";
 
 
+    @Test
+    public void removeAttribute() {
+        NX.Cursor root = parse(xml);
+        NX.Cursor person = root.to("person");
+
+        person.removeAttr("age");
+
+        String modifiedXml = root.dumpXml(StandardCharsets.UTF_8);
+        NX.Cursor parsed = parse(modifiedXml);
+        assertNull(parsed.to("person").optionalAttr("age").text());
+    }
 
     @Test
-    public void readingAttributeAsText() throws Exception {
+    public void readingAttributeAsText() {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");
 
@@ -38,7 +50,7 @@ public class AttributeTest extends AbstractNXTest {
     }
 
     @Test
-    public void attemptingToGetMissingAttributeShouldThrowException() throws Exception {
+    public void attemptingToGetMissingAttributeShouldThrowException() {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");
 
@@ -54,7 +66,7 @@ public class AttributeTest extends AbstractNXTest {
     }
 
     @Test
-    public void textContentOfMissingAttributeShouldBeNull() throws Exception {
+    public void textContentOfMissingAttributeShouldBeNull() {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");
 
@@ -63,7 +75,7 @@ public class AttributeTest extends AbstractNXTest {
     }
 
     @Test
-    public void updatingTextOfMissingAttributeShouldDoNothing() throws Exception {
+    public void updatingTextOfMissingAttributeShouldDoNothing() {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");
 
@@ -76,12 +88,7 @@ public class AttributeTest extends AbstractNXTest {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");
 
-        Integer age = person.attr("age").text(new Function<String, Integer>() {
-            @Override
-            public Integer apply(String input) {
-                return Integer.parseInt(input);
-            }
-        });
+        Integer age = person.attr("age").text(Integer::parseInt);
 
         assertThat(age)
                 .as("Extracted age")
