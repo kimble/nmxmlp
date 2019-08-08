@@ -25,6 +25,8 @@ import com.google.common.collect.Sets;
 import com.google.common.io.ByteSource;
 import com.google.common.io.Closeables;
 import org.w3c.dom.*;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXParseException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,10 +40,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static javax.xml.transform.OutputKeys.INDENT;
 import static javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION;
@@ -58,11 +57,18 @@ public class NX {
     private final Map<Class<?>, Extractor<?>> extractors = Maps.newHashMap();
 
     public NX() {
+        this(Collections.<ConfigFeature>emptySet());
+    }
+
+    public NX(Set<ConfigFeature> features) {
         transformerFactory = TransformerFactory.newInstance();
         docBuilderFactory = DocumentBuilderFactory.newInstance();
 
         // Without this "localName" won't work for namespaced documents
         docBuilderFactory.setNamespaceAware(true);
+
+        docBuilderFactory.setIgnoringElementContentWhitespace(features.contains(ConfigFeature.IGNORE_WHITESPACE));
+        docBuilderFactory.setValidating(features.contains(ConfigFeature.VALIDATING));
 
         // Default extractors
         extractors.put(Integer.class, new IntegerExtractor());
@@ -70,6 +76,7 @@ public class NX {
         extractors.put(Float.class, new FloatExtractor());
         extractors.put(Double.class, new DoubleExtractor());
     }
+
 
     public <R> NX registerExtractor(Class<R> type, Extractor<R> extractor) {
         extractors.put(type, extractor);
@@ -99,6 +106,25 @@ public class NX {
     public Cursor from(InputStream stream) throws Ex {
         try {
             final DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+            docBuilder.setErrorHandler(new ErrorHandler() {
+
+                @Override
+                public void warning(SAXParseException exception) {
+                    throw new Ex("Parser warning", exception);
+                }
+
+                @Override
+                public void error(SAXParseException exception) {
+                    throw new Ex("Parser error", exception);
+                }
+
+                @Override
+                public void fatalError(SAXParseException exception) {
+                    throw new Ex("Parser fatal error", exception);
+                }
+
+            });
+
             final Document document = docBuilder.parse(stream);
             return new NodeCursor(document, document.getDocumentElement());
         }
@@ -847,5 +873,12 @@ public class NX {
 
     }
 
+    public enum ConfigFeature {
+
+        IGNORE_WHITESPACE,
+
+        VALIDATING
+
+    }
 
 }
