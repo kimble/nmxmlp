@@ -16,13 +16,9 @@
 package com.developerb.nmxmlp;
 
 import com.google.common.io.ByteSource;
-import com.google.common.io.Resources;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +27,7 @@ import static org.junit.Assert.*;
 public class XmlLoadingTest extends AbstractNXTest {
 
     @Test
-    public void loadInvalidXML() throws Exception {
+    public void loadInvalidXML() {
         try {
             parse("<root><unclosedTag></root>");
 
@@ -45,7 +41,7 @@ public class XmlLoadingTest extends AbstractNXTest {
     }
 
     @Test
-    public void loadInvalidXMLFromBytes() throws Exception {
+    public void loadInvalidXMLFromBytes() {
         try {
             parse(ByteSource.wrap("<root><unclosedTag></root>".getBytes(UTF_8)));
 
@@ -71,7 +67,7 @@ public class XmlLoadingTest extends AbstractNXTest {
     }
 
     @Test
-    public void loadValidXML() throws Exception {
+    public void loadValidXML() {
         NX.Cursor cursor = parse("<root><a /></root>");
 
         assertNotNull(cursor);
@@ -79,12 +75,12 @@ public class XmlLoadingTest extends AbstractNXTest {
     }
 
     @Test
-    public void failingToReadFromByteSource() throws MalformedURLException {
+    public void failingToReadFromByteSource() {
         try {
             parse(new ByteSource() {
 
                 @Override
-                public InputStream openStream() throws IOException {
+                public InputStream openStream() {
                     throw new IllegalStateException("Oups...");
                 }
 

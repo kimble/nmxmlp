@@ -110,17 +110,17 @@ public class NX {
 
                 @Override
                 public void warning(SAXParseException exception) {
-                    throw new Ex("Parser warning", exception);
+                    throw new Ex("Parser warning: " + exception.getMessage(), exception);
                 }
 
                 @Override
                 public void error(SAXParseException exception) {
-                    throw new Ex("Parser error", exception);
+                    throw new Ex("Parser error: " + exception.getMessage(), exception);
                 }
 
                 @Override
                 public void fatalError(SAXParseException exception) {
-                    throw new Ex("Parser fatal error", exception);
+                    throw new Ex("Parser fatal error: " + exception.getMessage(), exception);
                 }
 
             });
