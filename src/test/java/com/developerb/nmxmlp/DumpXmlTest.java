@@ -29,7 +29,7 @@ public class DumpXmlTest extends AbstractNXTest {
     private String xml = "<a><b><c>value</c></b></a>";
 
     @Test
-    public void dumpXmlWithoutXmlDeclaration() throws Exception {
+    public void dumpXmlWithoutXmlDeclaration() {
         NX nx = new NX();
         NX.Cursor root = nx.from(xml);
 
@@ -37,7 +37,7 @@ public class DumpXmlTest extends AbstractNXTest {
     }
 
     @Test
-    public void dumpXmlFromChildNode() throws Exception {
+    public void dumpXmlFromChildNode() {
         NX nx = new NX();
         NX.Cursor root = nx.from(xml);
 
@@ -45,7 +45,7 @@ public class DumpXmlTest extends AbstractNXTest {
     }
 
     @Test
-    public void dumpIndentedXml() throws Exception {
+    public void dumpIndentedXml() {
         NX nx = new NX();
         NX.Cursor root = nx.from(xml);
 
@@ -57,7 +57,7 @@ public class DumpXmlTest extends AbstractNXTest {
     }
 
     @Test
-    public void dumpXmlWithXmlDeclaration() throws Exception {
+    public void dumpXmlWithXmlDeclaration() {
         NX.Cursor root = parse(xml);
 
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><a><b><c>value</c></b></a>", root.dumpXml(UTF_8));

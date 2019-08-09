@@ -27,7 +27,7 @@ public abstract class AbstractNXTest {
     private NX nx;
 
     @Before
-    public final void initialize() throws Exception {
+    public final void initialize() {
         this.nx = new NX();
         withNx(nx);
     }
@@ -48,7 +48,7 @@ public abstract class AbstractNXTest {
     }
 
     protected NX.Cursor parse(ByteSource source) {
-        return nx.from(source);
+        return nx.from(source, new NX.ReadContext(null));
     }
 
 }

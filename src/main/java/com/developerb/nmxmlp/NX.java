@@ -25,6 +25,7 @@ import com.google.common.collect.Sets;
 import com.google.common.io.ByteSource;
 import com.google.common.io.Closeables;
 import org.w3c.dom.*;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
@@ -42,8 +43,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.*;
 
-import static javax.xml.transform.OutputKeys.INDENT;
-import static javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION;
+import static javax.xml.transform.OutputKeys.*;
 
 /**
  * No more xml please!
@@ -83,7 +83,11 @@ public class NX {
         return this;
     }
 
-    public Cursor from(final String xml) throws Ex {
+    public Cursor from(String xml) throws Ex {
+        return from(xml, new ReadContext(null));
+    }
+
+    public Cursor from(final String xml, ReadContext context) throws Ex {
         return from(new ByteSource() {
 
             @Override
@@ -91,21 +95,21 @@ public class NX {
                 return new ByteArrayInputStream(xml.getBytes());
             }
 
-        });
+        }, context);
     }
 
-    public Cursor from(ByteSource source) throws Ex {
+    public Cursor from(ByteSource source, ReadContext context) throws Ex {
         try {
-            return from(source.openStream());
+            return from(source.openStream(), context);
         }
         catch (Exception ex) {
             throw new Ex("Failed to initialize xml cursor", ex);
         }
     }
 
-    public Cursor from(InputStream stream) throws Ex {
+    public Cursor from(InputStream stream, ReadContext context) throws Ex {
         try {
-            final DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
             docBuilder.setErrorHandler(new ErrorHandler() {
 
                 @Override
@@ -124,6 +128,12 @@ public class NX {
                 }
 
             });
+
+            if (context != null) {
+                if (context.entityResolver != null) {
+                    docBuilder.setEntityResolver(context.entityResolver);
+                }
+            }
 
             final Document document = docBuilder.parse(stream);
             return new NodeCursor(document, document.getDocumentElement());
@@ -770,7 +780,7 @@ public class NX {
                 transformer.setOutputProperty(OutputKeys.ENCODING, charset.name());
 
                 for (Feature feature : features) {
-                    feature.applyTo(transformer);
+                    feature.applyTo(transformer, document);
                 }
 
                 StreamResult result = new StreamResult(output);
@@ -854,7 +864,7 @@ public class NX {
 
         DUMP_INDENTED_XML {
             @Override
-            void applyTo(Transformer transformer) {
+            void applyTo(Transformer transformer, Document document) {
                 transformer.setOutputProperty(INDENT, "yes");
                 transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
             }
@@ -862,14 +872,39 @@ public class NX {
 
         DUMP_WITHOUT_XML_DECLARATION {
             @Override
-            void applyTo(Transformer transformer) {
+            void applyTo(Transformer transformer, Document document) {
                 transformer.setOutputProperty(OMIT_XML_DECLARATION, "yes");
+            }
+        },
+
+        RETAIN_DTD {
+            @Override
+            void applyTo(Transformer t, Document document) {
+                DocumentType documentType = document.getDoctype();
+                if (documentType != null) {
+                    if (documentType.getSystemId() != null) {
+                        t.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, documentType.getSystemId());
+                    }
+                    if (documentType.getPublicId() != null) {
+                        t.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, documentType.getPublicId());
+                    }
+                }
             }
         }
 
         ;
 
-        abstract void applyTo(Transformer t);
+        abstract void applyTo(Transformer t, Document document);
+
+    }
+
+    public static class ReadContext {
+
+        private final EntityResolver entityResolver;
+
+        public ReadContext(EntityResolver entityResolver) {
+            this.entityResolver = entityResolver;
+        }
 
     }
 
