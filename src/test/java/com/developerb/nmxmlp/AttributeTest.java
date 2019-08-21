@@ -41,6 +41,16 @@ public class AttributeTest extends AbstractNXTest {
     }
 
     @Test
+    public void hasAttr() {
+        NX.Cursor root = parse(xml);
+        NX.Cursor person = root.to("person");
+
+        assertTrue(person.hasAttr("firstName"));
+        assertFalse(person.hasAttr("no-such-attr"));
+        assertFalse(person.toOptional("no-such-node").hasAttr("no-such-attr"));
+    }
+
+    @Test
     public void readingAttributeAsText() {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");

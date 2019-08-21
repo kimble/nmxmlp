@@ -274,6 +274,12 @@ public class NX {
          */
         <R> void update(R payload, Inserter<R> inserter) throws Ex;
 
+        /**
+         * @param attributeName
+         * @return True if the node has an attribute with the given name
+         */
+        boolean hasAttr(String attributeName);
+
     }
 
     public static interface Attribute {
@@ -433,6 +439,11 @@ public class NX {
 
         @Override
         public void remove() throws Ex { }
+
+        @Override
+        public boolean hasAttr(String attributeName) {
+            return false;
+        }
 
     }
 
@@ -699,6 +710,11 @@ public class NX {
             else {
                 return new NullAttribute();
             }
+        }
+
+        @Override
+        public boolean hasAttr(String attributeName) {
+            return findAttribute(attributeName).isPresent();
         }
 
         private Optional<Node> findAttribute(String needle) throws Ambiguous {
