@@ -42,6 +42,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import static javax.xml.transform.OutputKeys.*;
 
@@ -282,9 +284,17 @@ public class NX {
 
         boolean hasChildNode(String name);
 
+        /**
+         *
+         * @param predicate All child nodes will be passed to this predicate
+         * @return A cursor pointing to the only node matching the predicate
+         * @throws Ex If the predicate matches zero or more then one node
+         */
+        NX.Cursor require(Predicate<Cursor> predicate) throws Ex;
+
     }
 
-    public static interface Attribute {
+    public interface Attribute {
 
         /**
          * @return The text value of the attribute
@@ -450,6 +460,11 @@ public class NX {
         @Override
         public boolean hasChildNode(String name) {
             return false;
+        }
+
+        @Override
+        public Cursor require(Predicate<Cursor> predicate) throws Ex {
+            throw new Ex(this, "Empty cursor, no child nodes");
         }
 
     }
@@ -729,7 +744,39 @@ public class NX {
             return findSingleNode(name).isPresent();
         }
 
-      private Optional<Node> findAttribute(String needle) throws Ambiguous {
+        @Override
+        public Cursor require(Predicate<Cursor> predicate) throws Ex {
+            final NodeList childNodes = node.getChildNodes();
+            Cursor match = null;
+
+            int count = 0;
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                final Node childNode = childNodes.item(i);
+                final String localName = childNode.getLocalName();
+
+                if (localName != null) {
+                    final List<NodeCursor> newAncestorList = newAncestorList();
+                    final Cursor cursor = new NodeCursor(document, newAncestorList, childNode, count++);
+
+                    if (predicate.test(cursor)) {
+                        if (match != null) {
+                            throw new Ambiguous(this);
+                        }
+
+                        match = cursor;
+                    }
+                }
+            }
+
+            if (match == null) {
+                throw new MissingNode(this, "predicate");
+            }
+            else {
+                return match;
+            }
+        }
+
+        private Optional<Node> findAttribute(String needle) throws Ambiguous {
             NamedNodeMap attributes = node.getAttributes();
 
             for (int i=0; i<attributes.getLength(); i++) {
@@ -885,6 +932,9 @@ public class NX {
     public static class Ambiguous extends Ex {
         Ambiguous(Cursor cursor, String needle) {
             super(cursor, "Expected to find a single instance of " + needle);
+        }
+        Ambiguous(Cursor cursor) {
+            super(cursor, "Predicate matched more then one child node");
         }
     }
 

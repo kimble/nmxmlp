@@ -95,5 +95,5 @@ simple services to expose.
 
 Roadmap 2.0
 -----------
-1. Java 8
-2. Drop Guava
+1. Drop Guava
+2. Make use of Java 8 classes / interfaces

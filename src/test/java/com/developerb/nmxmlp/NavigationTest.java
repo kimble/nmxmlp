@@ -205,4 +205,58 @@ public class NavigationTest extends AbstractNXTest {
         assertFalse(message.toOptional("footer").hasChildNode("text"));
     }
 
+    @Test
+    public void requireForOptionalNodeThrowsException() {
+        try {
+            NX.Cursor message = parse(messageXml);
+            message.toOptional("no-such-node").require(cursor -> false);
+        }
+        catch (NX.Ex ex) {
+            assertThat(ex)
+                .as("Expected exception")
+                .hasMessage("message >> ??? -- Empty cursor, no child nodes");
+        }
+    }
+
+    @Test
+    public void ambiguousPredicate() {
+        try {
+            NX.Cursor message = parse("<root><a /><a /></root>");
+            message.require(cursor -> cursor.name().equals("a"));
+        }
+        catch (NX.Ambiguous ex) {
+            assertThat(ex)
+                .as("Expected exception")
+                .hasMessage("root -- Predicate matched more then one child node");
+        }
+    }
+
+    @Test
+    public void stupidPredicate() {
+        try {
+            NX.Cursor message = parse("<root><a /><a /></root>");
+            message.require(cursor -> cursor.name().equals("b"));
+        }
+        catch (NX.MissingNode ex) {
+            assertThat(ex)
+                .as("Expected exception")
+                .hasMessage("root -- Unable to find 'predicate'");
+        }
+    }
+
+    @Test
+    public void correctPredicate() {
+        try {
+            NX.Cursor message = parse("<root><a /><b /></root>");
+            NX.Cursor matchingCursor = message.require(cursor -> cursor.name().equals("b"));
+
+            assertEquals("b", matchingCursor.name());
+        }
+        catch (NX.MissingNode ex) {
+            assertThat(ex)
+                .as("Expected exception")
+                .hasMessage("root -- Unable to find 'predicate'");
+        }
+    }
+
 }
