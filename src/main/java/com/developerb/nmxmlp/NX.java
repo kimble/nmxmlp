@@ -280,6 +280,8 @@ public class NX {
          */
         boolean hasAttr(String attributeName);
 
+        boolean hasChildNode(String name);
+
     }
 
     public static interface Attribute {
@@ -442,6 +444,11 @@ public class NX {
 
         @Override
         public boolean hasAttr(String attributeName) {
+            return false;
+        }
+
+        @Override
+        public boolean hasChildNode(String name) {
             return false;
         }
 
@@ -717,7 +724,12 @@ public class NX {
             return findAttribute(attributeName).isPresent();
         }
 
-        private Optional<Node> findAttribute(String needle) throws Ambiguous {
+        @Override
+        public boolean hasChildNode(String name) {
+            return findSingleNode(name).isPresent();
+        }
+
+      private Optional<Node> findAttribute(String needle) throws Ambiguous {
             NamedNodeMap attributes = node.getAttributes();
 
             for (int i=0; i<attributes.getLength(); i++) {

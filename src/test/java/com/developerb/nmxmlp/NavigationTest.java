@@ -19,9 +19,7 @@ import org.junit.Test;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class NavigationTest extends AbstractNXTest {
 
@@ -196,6 +194,15 @@ public class NavigationTest extends AbstractNXTest {
                     .as("Expected exception")
                     .hasMessage("headers -- Unable to find 'header' with index 2 - Did you mean: header?");
         }
+    }
+
+    @Test
+    public void hasNode() {
+        NX.Cursor message = parse(messageXml);
+
+        assertTrue(message.hasChildNode("header"));
+        assertFalse(message.hasChildNode("footer"));
+        assertFalse(message.toOptional("footer").hasChildNode("text"));
     }
 
 }
