@@ -42,7 +42,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static javax.xml.transform.OutputKeys.*;
@@ -59,7 +58,7 @@ public class NX {
     private final Map<Class<?>, Extractor<?>> extractors = Maps.newHashMap();
 
     public NX() {
-        this(Collections.<ConfigFeature>emptySet());
+        this(Collections.emptySet());
     }
 
     public NX(Set<ConfigFeature> features) {
@@ -478,7 +477,7 @@ public class NX {
         private final Document document;
 
         NodeCursor(Document document, Node node) {
-            this(document, new ArrayList<NodeCursor>(), node, 0);
+            this(document, new ArrayList<>(), node, 0);
         }
 
         NodeCursor(Document document, List<NodeCursor> ancestors, Node node, int index) {
@@ -512,7 +511,10 @@ public class NX {
             Element element = document.createElement(tagName);
             Node newNode = node.appendChild(element);
 
-            return new NodeCursor(document, newNode);
+            List<NodeCursor> ancestors = Lists.newArrayList(this.ancestors);
+            ancestors.add(this);
+
+            return new NodeCursor(document, ancestors, newNode, 0);
         }
 
         @Override
@@ -552,9 +554,8 @@ public class NX {
             final NodeList childNodes = node.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
                 final Node childNode = childNodes.item(i);
-                final String localName = childNode.getLocalName();
 
-                if (localName != null && localName.equalsIgnoreCase(tagName)) {
+                if (isNamed(childNode, tagName)) {
                     if (found != null) {
                         throw new Ambiguous(this, tagName);
                     }
@@ -567,15 +568,21 @@ public class NX {
             return Optional.fromNullable(found);
         }
 
+        private boolean isNamed(Node childNode, String needle) {
+            String nodeName = childNode.getNodeName();
+            String localName = childNode.getLocalName();
+
+            return (nodeName != null && nodeName.equalsIgnoreCase(needle)) || (localName != null && localName.equalsIgnoreCase(needle));
+        }
+
         @Override
         public Cursor to(int position, String tagName) throws MissingNode {
             int count = 0;
             final NodeList childNodes = node.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
                 final Node childNode = childNodes.item(i);
-                final String localName = childNode.getLocalName();
 
-                if (localName != null && localName.equalsIgnoreCase(tagName)) {
+                if (isNamed(childNode, tagName)) {
                     count++;
 
                     if (count == position + 1) {
@@ -601,9 +608,8 @@ public class NX {
             final NodeList childNodes = node.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
                 final Node childNode = childNodes.item(i);
-                final String localName = childNode.getLocalName();
 
-                if (localName != null && localName.equalsIgnoreCase(tagName)) {
+                if (isNamed(childNode, tagName)) {
                     count++;
                 }
             }
@@ -650,14 +656,9 @@ public class NX {
         public <R> List<R> extractCollection(String needle, final Extractor<R> extractor) throws Ex {
             final List<R> result = Lists.newArrayList();
 
-            iterateCollection(needle, new Iterator() {
-
-                @Override
-                public void on(Cursor cursor) throws Ex {
-                    final R converted = cursor.extract(extractor);
-                    result.add(converted);
-                }
-
+            iterateCollection(needle, cursor -> {
+                final R converted = cursor.extract(extractor);
+                result.add(converted);
             });
 
             return result;
@@ -670,9 +671,8 @@ public class NX {
             int count = 0;
             for (int i = 0; i < childNodes.getLength(); i++) {
                 final Node childNode = childNodes.item(i);
-                final String localName = childNode.getLocalName();
 
-                if (localName != null && localName.equalsIgnoreCase(needle)) {
+                if (isNamed(childNode, needle)) {
                     final List<NodeCursor> newAncestorList = newAncestorList();
                     final Cursor cursor = new NodeCursor(document, newAncestorList, childNode, count++);
                     iterator.on(cursor);
@@ -752,9 +752,13 @@ public class NX {
             int count = 0;
             for (int i = 0; i < childNodes.getLength(); i++) {
                 final Node childNode = childNodes.item(i);
-                final String localName = childNode.getLocalName();
+                String name = childNode.getLocalName();
 
-                if (localName != null) {
+                if (name == null) {
+                    name = childNode.getNodeName();
+                }
+
+                if (name != null) {
                     final List<NodeCursor> newAncestorList = newAncestorList();
                     final Cursor cursor = new NodeCursor(document, newAncestorList, childNode, count++);
 
@@ -781,9 +785,8 @@ public class NX {
 
             for (int i=0; i<attributes.getLength(); i++) {
                 final Node attribute = attributes.item(i);
-                final String localName = attribute.getLocalName();
 
-                if (localName.equalsIgnoreCase(needle)) {
+                if (isNamed(attribute, needle)) {
                     return Optional.of(attribute);
                 }
             }
@@ -798,7 +801,7 @@ public class NX {
 
         @Override
         public String name() {
-            return node.getLocalName();
+            return node.getNodeName();
         }
 
         @Override
@@ -918,8 +921,14 @@ public class NX {
             final Set<String> names = Sets.newTreeSet();
             for (int i=0; i<childNodes.getLength(); i++) {
                 final Node item = childNodes.item(i);
-                if (item.getLocalName() != null) {
-                    names.add(item.getLocalName());
+                String name = item.getLocalName();
+
+                if (name == null) {
+                    name = item.getNodeName();
+                }
+
+                if (name != null) {
+                    names.add(name);
                 }
             }
 
