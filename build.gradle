@@ -60,10 +60,10 @@ jacocoTestReport {
 }
 
 dependencies {
-    compile 'com.google.guava:guava:28.0-jre'
+    implementation 'com.google.guava:guava:28.0-jre'
 
-    testCompile 'junit:junit:4.12',
-            'org.assertj:assertj-core:1.7.1'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.assertj:assertj-core:3.13.2'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
