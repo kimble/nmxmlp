@@ -15,21 +15,26 @@
  */
 package com.developerb.nmxmlp;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
-public class AttributeTest extends AbstractNXTest {
+class AttributeTest extends AbstractNXTest {
 
     private final String xml = "<root><person firstName='Nasse' lastName='Nøff' age='10' /></root>";
 
 
     @Test
-    public void removeAttribute() {
+    void removeAttribute() {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");
 
@@ -41,7 +46,7 @@ public class AttributeTest extends AbstractNXTest {
     }
 
     @Test
-    public void hasAttr() {
+    void hasAttr() {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");
 
@@ -51,7 +56,7 @@ public class AttributeTest extends AbstractNXTest {
     }
 
     @Test
-    public void readingAttributeAsText() {
+    void readingAttributeAsText() {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");
 
@@ -60,7 +65,7 @@ public class AttributeTest extends AbstractNXTest {
     }
 
     @Test
-    public void attemptingToGetMissingAttributeShouldThrowException() {
+    void attemptingToGetMissingAttributeShouldThrowException() {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");
 
@@ -76,7 +81,7 @@ public class AttributeTest extends AbstractNXTest {
     }
 
     @Test
-    public void textContentOfMissingAttributeShouldBeNull() {
+    void textContentOfMissingAttributeShouldBeNull() {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");
 
@@ -85,7 +90,7 @@ public class AttributeTest extends AbstractNXTest {
     }
 
     @Test
-    public void updatingTextOfMissingAttributeShouldDoNothing() {
+    void updatingTextOfMissingAttributeShouldDoNothing() {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");
 
@@ -94,7 +99,7 @@ public class AttributeTest extends AbstractNXTest {
     }
 
     @Test
-    public void mapAttributeTextUsingFunction() {
+    void mapAttributeTextUsingFunction() {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");
 
@@ -106,7 +111,7 @@ public class AttributeTest extends AbstractNXTest {
     }
 
     @Test
-    public void mapAttributeTextUsingMethodReference() {
+    void mapAttributeTextUsingMethodReference() {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");
 
@@ -118,7 +123,7 @@ public class AttributeTest extends AbstractNXTest {
     }
 
     @Test
-    public void mapMissingOptionalAttributeReturnsNull() {
+    void mapMissingOptionalAttributeReturnsNull() {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");
 

@@ -1,15 +1,15 @@
 package com.developerb.nmxmlp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 
-public class NodeInsertTest extends AbstractNXTest {
+class NodeInsertTest extends AbstractNXTest {
 
   private final String xml = "<root></root>";
 
   @Test
-  public void insert_node() {
+  void insert_node() {
     NX.Cursor root = parse(xml);
     NX.Cursor person = root.append("person");
     person.setAttr("name", "Per");

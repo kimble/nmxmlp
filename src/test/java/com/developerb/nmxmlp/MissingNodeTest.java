@@ -15,23 +15,24 @@
  */
 package com.developerb.nmxmlp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class MissingNodeTest extends AbstractNXTest {
+class MissingNodeTest extends AbstractNXTest {
 
     private final String xml = "<root><person firstName='Nasse' lastName='Nøff' age='10' /></root>";
 
     @Test
-    public void optionalButExistingAttribute() {
+    void optionalButExistingAttribute() {
         NX.Cursor root = parse(xml);
         NX.Cursor person = root.to("person");
 
@@ -43,7 +44,7 @@ public class MissingNodeTest extends AbstractNXTest {
     }
 
     @Test
-    public void attributeOnMissingOptionalNode() {
+    void attributeOnMissingOptionalNode() {
         NX.Cursor root = parse(xml);
         NX.Cursor pirate = root.toOptional("pirate"); // Does not exist
 
@@ -52,7 +53,7 @@ public class MissingNodeTest extends AbstractNXTest {
     }
 
     @Test
-    public void optionalAttributeOnMissingOptionalNode() {
+    void optionalAttributeOnMissingOptionalNode() {
         NX.Cursor root = parse(xml);
         NX.Cursor pirate = root.toOptional("pirate"); // Does not exist
 
@@ -61,7 +62,7 @@ public class MissingNodeTest extends AbstractNXTest {
     }
 
     @Test
-    public void toMultipleLevelsMissing() {
+    void toMultipleLevelsMissing() {
         NX.Cursor root = parse(xml);
         NX.Cursor pirateLegs = root.toOptional("pirate", "legs"); // Does not exist
 
@@ -69,7 +70,7 @@ public class MissingNodeTest extends AbstractNXTest {
     }
 
     @Test
-    public void updatingTextOfMissingNodesDoesNothing() {
+    void updatingTextOfMissingNodesDoesNothing() {
         NX.Cursor root = parse(xml);
         String before = root.dumpXml(UTF_8);
 
@@ -80,7 +81,7 @@ public class MissingNodeTest extends AbstractNXTest {
     }
 
     @Test
-    public void extractCollectionUnderMissingNode() {
+    void extractCollectionUnderMissingNode() {
         NX.Cursor root = parse(xml);
         NX.Cursor pirate = root.toOptional("pirate");
         List<Object> birds = pirate.extractCollection("birds", (NX.Cursor cursor) -> null);
@@ -91,7 +92,7 @@ public class MissingNodeTest extends AbstractNXTest {
     }
 
     @Test
-    public void extractCollectionUnderMissingNodeRegisteredExtractor() {
+    void extractCollectionUnderMissingNodeRegisteredExtractor() {
         NX.Cursor root = parse(xml);
         NX.Cursor pirate = root.toOptional("pirate");
         List<Integer> birds = pirate.extractCollection("birds", Integer.class);
@@ -102,7 +103,7 @@ public class MissingNodeTest extends AbstractNXTest {
     }
 
     @Test
-    public void extractFromMissingNode() {
+    void extractFromMissingNode() {
         NX.Cursor root = parse(xml);
         NX.Cursor pirate = root.toOptional("pirate");
 
@@ -112,7 +113,7 @@ public class MissingNodeTest extends AbstractNXTest {
 
 
     @Test
-    public void extractorFromMissingNode() {
+    void extractorFromMissingNode() {
         NX.Cursor root = parse(xml);
         NX.Cursor pirate = root.toOptional("pirate");
 
@@ -121,7 +122,7 @@ public class MissingNodeTest extends AbstractNXTest {
     }
 
     @Test
-    public void iterateUnderMissingNode() {
+    void iterateUnderMissingNode() {
         NX.Cursor root = parse(xml);
         NX.Cursor pirate = root.toOptional("pirate");
 
@@ -132,7 +133,7 @@ public class MissingNodeTest extends AbstractNXTest {
     }
 
     @Test
-    public void toNumberedElementUnderMissingNode() {
+    void toNumberedElementUnderMissingNode() {
         NX.Cursor root = parse(xml);
         NX.Cursor pirate = root.toOptional("pirate");
 
@@ -141,18 +142,18 @@ public class MissingNodeTest extends AbstractNXTest {
     }
 
     @Test
-    public void insertingCollectionUnderMissingElementDoesNothing() {
+    void insertingCollectionUnderMissingElementDoesNothing() {
         NX.Cursor root = parse(xml);
         String before = root.dumpXml(UTF_8);
 
         NX.Cursor pirate = root.toOptional("pirate"); // Does not exist
-        pirate.insertCollection("bird", Arrays.asList("Polly"), (cursor, input) -> { });
+        pirate.insertCollection("bird", Collections.singletonList("Polly"), (cursor, input) -> { });
 
         assertEquals(before, root.dumpXml(UTF_8));
     }
 
     @Test
-    public void updatingNodeUnderMissingElementDoesNothing() {
+    void updatingNodeUnderMissingElementDoesNothing() {
         NX.Cursor root = parse(xml);
         String before = root.dumpXml(UTF_8);
 

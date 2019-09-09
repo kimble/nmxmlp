@@ -16,17 +16,17 @@
 package com.developerb.nmxmlp;
 
 import com.google.common.io.Resources;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class UpdatingTest extends AbstractNXTest {
+class UpdatingTest extends AbstractNXTest {
 
     @Test
-    public void updateText() throws Exception {
+    void updateText() {
         NX.Cursor person = parse("<person><name>Donald Duck</name><age>30</age></person>");
         person.to("name").text("Mikke Mus");
 
@@ -35,7 +35,7 @@ public class UpdatingTest extends AbstractNXTest {
     }
 
     @Test
-    public void soapRequestPrototype() throws Exception {
+    void soapRequestPrototype() {
         URL soapRequestResource = Resources.getResource("soap/soap-request.xml");
         NX.Cursor envelope = parse(Resources.asByteSource(soapRequestResource));
 
@@ -52,7 +52,7 @@ public class UpdatingTest extends AbstractNXTest {
     }
 
     @Test
-    public void updateSoapRequestAttribute() throws Exception {
+    void updateSoapRequestAttribute() {
         URL soapRequestResource = Resources.getResource("soap/soap-request.xml");
         NX.Cursor envelope = parse(Resources.asByteSource(soapRequestResource));
 

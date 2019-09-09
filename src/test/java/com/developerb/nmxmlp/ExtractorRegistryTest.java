@@ -15,18 +15,18 @@
  */
 package com.developerb.nmxmlp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class ExtractorRegistryTest {
+class ExtractorRegistryTest {
 
     @Test
-    public void extract() throws NX.Ex {
+    void extract() throws NX.Ex {
         NX nx = new NX();
         Member member = nx.registerExtractor(Member.class, new MemberExtractor())
                 .from("<person><first>Nasse</first><last>Nøff</last></person>")
@@ -37,7 +37,7 @@ public class ExtractorRegistryTest {
     }
 
     @Test
-    public void extractCollectionWithRegisteredExtractor() throws NX.Ex {
+    void extractCollectionWithRegisteredExtractor() throws NX.Ex {
         NX nx = new NX();
         List<Member> members = nx.registerExtractor(Member.class, new MemberExtractor())
                 .from("<members><person><first>Nasse</first><last>Nøff</last></person><person><first>Ole</first><last>Brumm</last></person></members>")
@@ -53,7 +53,7 @@ public class ExtractorRegistryTest {
     }
 
     @Test
-    public void missingExtractor() throws NX.Ex {
+    void missingExtractor() throws NX.Ex {
         NX nx = new NX();
 
         try {

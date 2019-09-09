@@ -16,18 +16,20 @@
 package com.developerb.nmxmlp;
 
 import com.google.common.io.ByteSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class XmlLoadingTest extends AbstractNXTest {
+class XmlLoadingTest extends AbstractNXTest {
 
     @Test
-    public void loadInvalidXML() {
+    void loadInvalidXML() {
         try {
             parse("<root><unclosedTag></root>");
 
@@ -41,7 +43,7 @@ public class XmlLoadingTest extends AbstractNXTest {
     }
 
     @Test
-    public void loadInvalidXMLFromBytes() {
+    void loadInvalidXMLFromBytes() {
         try {
             parse(ByteSource.wrap("<root><unclosedTag></root>".getBytes(UTF_8)));
 
@@ -55,7 +57,7 @@ public class XmlLoadingTest extends AbstractNXTest {
     }
 
     @Test
-    public void readingNodeWithDuplicateAttributeTriggersException() {
+    void readingNodeWithDuplicateAttributeTriggersException() {
         try {
             parse("<people><person name='First' name='Second' /></people>");
         }
@@ -67,7 +69,7 @@ public class XmlLoadingTest extends AbstractNXTest {
     }
 
     @Test
-    public void loadValidXML() {
+    void loadValidXML() {
         NX.Cursor cursor = parse("<root><a /></root>");
 
         assertNotNull(cursor);
@@ -75,7 +77,7 @@ public class XmlLoadingTest extends AbstractNXTest {
     }
 
     @Test
-    public void failingToReadFromByteSource() {
+    void failingToReadFromByteSource() {
         try {
             parse(new ByteSource() {
 

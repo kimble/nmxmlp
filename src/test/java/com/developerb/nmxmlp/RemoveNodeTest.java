@@ -1,25 +1,25 @@
 package com.developerb.nmxmlp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static com.google.common.base.Charsets.UTF_8;
-import static org.junit.Assert.assertEquals;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class RemoveNodeTest extends AbstractNXTest {
+class RemoveNodeTest extends AbstractNXTest {
 
     @Test
-    public void attemptToNavigateToMissingNodeResultsInExceptionWithHelpfulMessage() {
+    void attemptToNavigateToMissingNodeResultsInExceptionWithHelpfulMessage() {
         NX.Cursor cursor = parse("<root><a>a</a><b>b</b></root>");
         cursor.to("a").remove();
 
         NX.Cursor mutated = parse(cursor.dumpXml(UTF_8));
-        assertEquals("Node a should be gone", 0, mutated.count("a"));
-        assertEquals("Node b should still be there", 1, mutated.count("b"));
+        assertEquals(0, mutated.count("a"), "Node a should be gone");
+        assertEquals(1, mutated.count("b"), "Node b should still be there");
     }
 
     @Test
-    public void removingNodeFromEmptyCursorDoesNothing() {
+    void removingNodeFromEmptyCursorDoesNothing() {
         NX.Cursor cursor = parse("<root><a>a</a><b>b</b></root>");
         cursor.toOptional("no-such-node").remove();
     }

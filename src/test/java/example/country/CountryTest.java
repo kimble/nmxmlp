@@ -20,7 +20,7 @@ import com.developerb.nmxmlp.NX;
 import com.google.common.base.Splitter;
 import com.google.common.io.ByteSource;
 import com.google.common.io.Resources;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 import java.util.stream.Stream;
@@ -42,7 +42,7 @@ public class CountryTest extends AbstractNXTest {
     }
 
     @Test
-    public void countCountriesWithMoreThenEightLanguages() {
+    void countCountriesWithMoreThenEightLanguages() {
         long number = streamCountries()
                 .filter(info -> info.languages().size() > 8)
                 .count();

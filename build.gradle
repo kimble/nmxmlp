@@ -62,7 +62,8 @@ jacocoTestReport {
 dependencies {
     implementation 'com.google.guava:guava:28.0-jre'
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
     testImplementation 'org.assertj:assertj-core:3.13.2'
 }
 
@@ -74,6 +75,10 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
+}
+
+test {
+    useJUnitPlatform()
 }
 
 artifacts {

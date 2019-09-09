@@ -15,21 +15,22 @@
  */
 package com.developerb.nmxmlp;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import static com.developerb.nmxmlp.NX.Feature.DUMP_INDENTED_XML;
 import static com.developerb.nmxmlp.NX.Feature.DUMP_WITHOUT_XML_DECLARATION;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DumpXmlTest extends AbstractNXTest {
+class DumpXmlTest extends AbstractNXTest {
 
     private String xml = "<a><b><c>value</c></b></a>";
 
     @Test
-    public void dumpXmlWithoutXmlDeclaration() {
+    void dumpXmlWithoutXmlDeclaration() {
         NX nx = new NX();
         NX.Cursor root = nx.from(xml);
 
@@ -37,7 +38,7 @@ public class DumpXmlTest extends AbstractNXTest {
     }
 
     @Test
-    public void dumpXmlFromChildNode() {
+    void dumpXmlFromChildNode() {
         NX nx = new NX();
         NX.Cursor root = nx.from(xml);
 
@@ -45,7 +46,7 @@ public class DumpXmlTest extends AbstractNXTest {
     }
 
     @Test
-    public void dumpIndentedXml() {
+    void dumpIndentedXml() {
         NX nx = new NX();
         NX.Cursor root = nx.from(xml);
 
@@ -57,14 +58,14 @@ public class DumpXmlTest extends AbstractNXTest {
     }
 
     @Test
-    public void dumpXmlWithXmlDeclaration() {
+    void dumpXmlWithXmlDeclaration() {
         NX.Cursor root = parse(xml);
 
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><a><b><c>value</c></b></a>", root.dumpXml(UTF_8));
     }
 
     @Test
-    public void dumpXmlLatin1() {
+    void dumpXmlLatin1() {
         NX.Cursor root = parse(xml);
 
         String utf8 = root.dumpXml(UTF_8);

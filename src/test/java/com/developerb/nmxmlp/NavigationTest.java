@@ -15,13 +15,17 @@
  */
 package com.developerb.nmxmlp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class NavigationTest extends AbstractNXTest {
+class NavigationTest extends AbstractNXTest {
 
     private final String messageXml = "<message><header><id>id-123</id></header><body><person><name>Nasse Nøff</name><age>12</age></person></body></message>";
 
@@ -30,7 +34,7 @@ public class NavigationTest extends AbstractNXTest {
 
 
     @Test
-    public void simpleNavigationUsingTo() throws NX.Ex {
+    void simpleNavigationUsingTo() throws NX.Ex {
         NX.Cursor message = parse(messageXml);
 
         assertEquals("id-123", message.to("header", "id").text());
@@ -38,7 +42,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void toStringWillDescribePath() {
+    void toStringWillDescribePath() {
         NX.Cursor message = parse(messageXml);
         String describedPath = message.toString();
 
@@ -46,7 +50,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void describePathRoot() {
+    void describePathRoot() {
         NX.Cursor message = parse(messageXml);
         String describedPath = message.describePath();
 
@@ -54,7 +58,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void describePathLevelOne() {
+    void describePathLevelOne() {
         NX.Cursor message = parse(messageXml);
         String describedPath = message.to("header").describePath();
 
@@ -62,7 +66,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void describePathLevelTwo() {
+    void describePathLevelTwo() {
         NX.Cursor message = parse(messageXml);
         String describedPath = message.to("header", "id").describePath();
 
@@ -70,7 +74,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void describePathMissingNodeUnderLevelTwo() {
+    void describePathMissingNodeUnderLevelTwo() {
         NX.Cursor message = parse(messageXml);
         NX.Cursor id = message.to("header", "id");
         String describedPath = id.toOptional("no-such-node").describePath();
@@ -79,7 +83,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void describePathSecondNode() {
+    void describePathSecondNode() {
         NX.Cursor headers = parse(headersXml);
         String describedPath = headers.to(1, "header").describePath();
 
@@ -87,7 +91,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void describePathFirstNode() {
+    void describePathFirstNode() {
         NX.Cursor headers = parse(headersXml);
         String describedPath = headers.to(0, "header").describePath();
 
@@ -95,7 +99,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void ambiguousNavigationShouldResultInException() throws Exception {
+    void ambiguousNavigationShouldResultInException() throws Exception {
         NX.Cursor headers = parse(headersXml);
 
         try {
@@ -110,7 +114,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void describeCursorPath() throws NX.Ex {
+    void describeCursorPath() throws NX.Ex {
         NX.Cursor message = parse(headersXml);
 
         assertEquals("headers >> header >> k", message.to(0, "header").to("k").describePath());
@@ -118,7 +122,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void navigatingToMissingNodeShouldOfferHelpfulExceptionMessage() throws Exception {
+    void navigatingToMissingNodeShouldOfferHelpfulExceptionMessage() throws Exception {
         NX.Cursor message = parse(messageXml);
 
         try {
@@ -133,7 +137,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void optionalNavigationAndDefaultValues() throws Exception {
+    void optionalNavigationAndDefaultValues() throws Exception {
         NX.Cursor message = parse(messageXml);
         NX.Cursor missingNode = message.to("header").toOptional("no-such-node");
 
@@ -143,7 +147,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void deepNavigationWithOptionalNodesOneMissing() throws Exception {
+    void deepNavigationWithOptionalNodesOneMissing() throws Exception {
         NX.Cursor message = parse(messageXml);
         NX.Cursor missingNode = message.toOptional("header", "no-such-node");
 
@@ -151,7 +155,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void deepNavigationWithOptionalNodesBothMissing() throws Exception {
+    void deepNavigationWithOptionalNodesBothMissing() throws Exception {
         NX.Cursor message = parse(messageXml);
         NX.Cursor missingNode = message.toOptional("no-such-node", "another-missing-node");
 
@@ -159,7 +163,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void deepNavigationWithOptionalNodesBothExisting() throws Exception {
+    void deepNavigationWithOptionalNodesBothExisting() throws Exception {
         NX.Cursor message = parse(messageXml);
         NX.Cursor existingNode = message.toOptional("header", "id");
 
@@ -167,7 +171,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void dumpingXmlFromAMissingNodeDoesntMakeSense() throws Exception {
+    void dumpingXmlFromAMissingNodeDoesntMakeSense() throws Exception {
         NX.Cursor message = parse(messageXml);
         NX.Cursor missingNode = message.to("header").toOptional("no-such-node");
 
@@ -183,7 +187,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void navigatingToMissingNodeIndex() {
+    void navigatingToMissingNodeIndex() {
         NX.Cursor message = parse(headersXml);
 
         try {
@@ -197,7 +201,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void hasNode() {
+    void hasNode() {
         NX.Cursor message = parse(messageXml);
 
         assertTrue(message.hasChildNode("header"));
@@ -206,7 +210,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void requireForOptionalNodeThrowsException() {
+    void requireForOptionalNodeThrowsException() {
         try {
             NX.Cursor message = parse(messageXml);
             message.toOptional("no-such-node").require(cursor -> false);
@@ -219,7 +223,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void ambiguousPredicate() {
+    void ambiguousPredicate() {
         try {
             NX.Cursor message = parse("<root><a /><a /></root>");
             message.require(cursor -> cursor.name().equals("a"));
@@ -232,7 +236,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void stupidPredicate() {
+    void stupidPredicate() {
         try {
             NX.Cursor message = parse("<root><a /><a /></root>");
             message.require(cursor -> cursor.name().equals("b"));
@@ -245,7 +249,7 @@ public class NavigationTest extends AbstractNXTest {
     }
 
     @Test
-    public void correctPredicate() {
+    void correctPredicate() {
         try {
             NX.Cursor message = parse("<root><a /><b /></root>");
             NX.Cursor matchingCursor = message.require(cursor -> cursor.name().equals("b"));

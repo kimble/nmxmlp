@@ -17,7 +17,7 @@ package com.developerb.nmxmlp;
 
 import com.google.common.io.ByteSource;
 import com.google.common.io.Resources;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.net.URL;
 
@@ -26,7 +26,7 @@ public abstract class AbstractNXTest {
 
     private NX nx;
 
-    @Before
+    @BeforeEach
     public final void initialize() {
         this.nx = new NX();
         withNx(nx);

@@ -15,19 +15,19 @@
  */
 package com.developerb.nmxmlp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DataInsertTest extends AbstractNXTest {
+class DataInsertTest extends AbstractNXTest {
 
     @Test
-    public void insertCollectionNoNamespaces() throws NX.Ex {
+    void insertCollectionNoNamespaces() throws NX.Ex {
         NX.Cursor peopleCursor = parse("<people><person name='Prototype' /></people>");
 
         List<Person> people = Arrays.asList (
@@ -45,7 +45,7 @@ public class DataInsertTest extends AbstractNXTest {
     }
 
     @Test
-    public void insertNamespacedSvg() throws NX.Ex {
+    void insertNamespacedSvg() throws NX.Ex {
         NX.Cursor cursor = parseResource("svg/simple-svg.xhtml");
         NX.Cursor svg = cursor.to("body").to("svg");
 
@@ -65,7 +65,7 @@ public class DataInsertTest extends AbstractNXTest {
     }
 
     @Test
-    public void updateSingleNodeTreeFromObject() throws Exception {
+    void updateSingleNodeTreeFromObject() throws Exception {
         NX.Cursor soapEnvelope = parseResource("soap/soap-request.xml");
 
         NX.Cursor requestHeader = soapEnvelope.to("header", "requestHeader");
@@ -79,7 +79,7 @@ public class DataInsertTest extends AbstractNXTest {
 
 
     @Test
-    public void insertedElementsInConnectionShouldBePositionedInTheSamePlaceAsThePrototypeElement() throws NX.Ex {
+    void insertedElementsInConnectionShouldBePositionedInTheSamePlaceAsThePrototypeElement() throws NX.Ex {
         NX.Cursor root = parse("<root><repeatMe /><fixed>should-not-move</fixed></root>");
 
         root.insertCollection("repeatMe", Arrays.asList("hei", "på", "deg"), NX.Cursor::text);
@@ -90,7 +90,7 @@ public class DataInsertTest extends AbstractNXTest {
     }
 
     @Test
-    public void insertCollectionMissingPrototypeNode() {
+    void insertCollectionMissingPrototypeNode() {
         NX.Cursor peopleCursor = parse("<people><person name='Prototype' /></people>");
         Iterable<String> pirates = Arrays.asList("Sabeltann", "Sortebill");
 

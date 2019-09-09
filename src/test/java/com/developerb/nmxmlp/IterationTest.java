@@ -15,16 +15,16 @@
  */
 package com.developerb.nmxmlp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class IterationTest extends AbstractNXTest {
+class IterationTest extends AbstractNXTest {
 
     @Test
-    public void iterate() throws NX.Ex {
+    void iterate() throws NX.Ex {
         NX.Cursor numbersCursor = parse("<numbers><n>1</n><n>2</n></numbers>");
 
         AtomicInteger sum = new AtomicInteger(0);

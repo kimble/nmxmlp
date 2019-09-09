@@ -15,17 +15,17 @@
  */
 package com.developerb.nmxmlp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class ErrorHandlingTest extends AbstractNXTest {
+class ErrorHandlingTest extends AbstractNXTest {
 
     private final String xml = "<root><person firstName='Nasse' lastName='Nøff' age='10' /></root>";
 
     @Test
-    public void attemptToNavigateToMissingNodeResultsInExceptionWithHelpfulMessage() {
+    void attemptToNavigateToMissingNodeResultsInExceptionWithHelpfulMessage() {
         NX.Cursor cursor = parse(xml);
 
         try {

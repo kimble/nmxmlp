@@ -1,18 +1,18 @@
 package com.developerb.nmxmlp;
 
 import com.google.common.collect.Sets;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.InputSource;
 
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class RetainDtdTest {
+class RetainDtdTest {
 
   @Test
-  public void print_xml_with_dtd() {
+  void print_xml_with_dtd() {
     String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<!DOCTYPE root PUBLIC \"NONE\" \"test://validation.dtd\">\n" +
         "<root><name>test</name></root>";

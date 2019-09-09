@@ -15,14 +15,14 @@
  */
 package com.developerb.nmxmlp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DataExtractionTest extends AbstractNXTest {
+class DataExtractionTest extends AbstractNXTest {
 
     private final String peopleXml = "<people>" +
             "<person><name>Nasse Nøff</name><age>5</age></person>" +
@@ -36,7 +36,7 @@ public class DataExtractionTest extends AbstractNXTest {
 
 
     @Test
-    public void simpleDataExtraction() throws Exception {
+    void simpleDataExtraction() {
         NX.Cursor person = parse(personXml);
 
         assertEquals("Nasse Nøff", person.to("name").text());
@@ -44,7 +44,7 @@ public class DataExtractionTest extends AbstractNXTest {
     }
 
     @Test
-    public void extractDouble() throws Exception {
+    void extractDouble() {
         NX.Cursor root = parse("<root><double>3.14159265</double></root>");
         Double extracted = root.to("double").extract(Double.class);
 
@@ -52,7 +52,7 @@ public class DataExtractionTest extends AbstractNXTest {
     }
 
     @Test
-    public void extractFloat() throws Exception {
+    void extractFloat() {
         NX.Cursor root = parse("<root><float>3.14159265</float></root>");
         Float extracted = root.to("float").extract(Float.class);
 
@@ -60,7 +60,7 @@ public class DataExtractionTest extends AbstractNXTest {
     }
 
     @Test
-    public void extractLong() throws Exception {
+    void extractLong() {
         NX.Cursor root = parse("<root><long>314159265</long></root>");
         Long extracted = root.to("long").extract(Long.class);
 
@@ -70,14 +70,14 @@ public class DataExtractionTest extends AbstractNXTest {
     }
 
     @Test
-    public void countElements() throws Exception {
+    void countElements() {
         NX.Cursor people = parse(peopleXml);
 
         assertEquals(2, people.count("person"));
     }
 
     @Test
-    public void extractSingleObject() throws Exception {
+    void extractSingleObject() {
         NX.Cursor person = parse(personXml);
 
         NX.Extractor<Person> extractor = new PersonExtractor();
@@ -88,7 +88,7 @@ public class DataExtractionTest extends AbstractNXTest {
     }
 
     @Test
-    public void extractObjectCollection() throws Exception {
+    void extractObjectCollection() {
         NX.Cursor person = parse(peopleXml);
 
         NX.Extractor<Person> extractor = new PersonExtractor();
@@ -105,8 +105,8 @@ public class DataExtractionTest extends AbstractNXTest {
 
     static class Person {
 
-        public final String name;
-        public final int age;
+        final String name;
+        final int age;
 
         Person(String name, int age) {
             this.name = name;
