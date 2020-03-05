@@ -102,8 +102,7 @@ public class NX {
     public Cursor from(ByteSource source, ReadContext context) throws Ex {
         try {
             return from(source.openStream(), context);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new Ex("Failed to initialize xml cursor", ex);
         }
     }
@@ -138,11 +137,9 @@ public class NX {
 
             final Document document = docBuilder.parse(stream);
             return new NodeCursor(document, document.getDocumentElement());
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new Ex("Failed to initialize xml cursor", ex);
-        }
-        finally {
+        } finally {
             Closeables.closeQuietly(stream);
         }
     }
@@ -204,8 +201,6 @@ public class NX {
     }
 
 
-
-
     /**
      * This is the main concept in this API. It's basically a convenient wrapper around
      * a node is a xml document. The cursor can be used to navigate, extract and insert data.
@@ -219,6 +214,12 @@ public class NX {
         Cursor to(int position, String tagName) throws MissingNode;
 
         Cursor append(String nodeName) throws Ex;
+
+        /**
+         * Insert a new node after the first predicate match.
+         * The node will be inserted at the end if the predicate never matches.
+         */
+        Cursor appendAfter(String nodeName, Predicate<Cursor> predicate) throws Ex;
 
         void setAttr(String name, String value) throws Ex;
 
@@ -257,20 +258,20 @@ public class NX {
         /**
          * This method will expect the xml to contain a single node that will be used
          * as a prototype when inserting data from the collection.
-         *
+         * <p>
          * I've found this to be useful when building soap requests with repeatable
          * elements.
          *
          * @param prototypeName name of the node to be used as a prototype.
-         * @param input collection to be inserted
-         * @param inserter will be called once for every element in the collection
+         * @param input         collection to be inserted
+         * @param inserter      will be called once for every element in the collection
          */
         <R> void insertCollection(String prototypeName, Iterable<R> input, Inserter<R> inserter) throws Ex;
 
         /**
          * Update a single node
          *
-         * @param payload to be inserted into a node
+         * @param payload  to be inserted into a node
          * @param inserter that'll update the node based on the payload content
          */
         <R> void update(R payload, Inserter<R> inserter) throws Ex;
@@ -284,7 +285,6 @@ public class NX {
         boolean hasChildNode(String name);
 
         /**
-         *
          * @param predicate All child nodes will be passed to this predicate
          * @return A cursor pointing to the only node matching the predicate
          * @throws Ex If the predicate matches zero or more then one node
@@ -302,7 +302,7 @@ public class NX {
 
         /**
          * Map the text value of the attribute by applying the given function.
-         *
+         * <p>
          * Warning: At some point I'll make this library Java 8 only and replace
          * the Guava function with the Java 8 interface.
          */
@@ -343,16 +343,20 @@ public class NX {
     private static class NullAttribute implements Attribute {
 
         @Override
-        public <R> R text(Function<String, R> func) { return null; }
+        public <R> R text(Function<String, R> func) {
+            return null;
+        }
 
         @Override
-        public String text() { return null; }
+        public String text() {
+            return null;
+        }
 
         @Override
-        public void text(String text) { }
+        public void text(String text) {
+        }
 
     }
-
 
 
     private class EmptyCursor implements Cursor {
@@ -364,25 +368,37 @@ public class NX {
         }
 
         @Override
-        public Cursor to(String firstName, String... remainingNames) throws Ex { return this; }
+        public Cursor to(String firstName, String... remainingNames) throws Ex {
+            return this;
+        }
 
         @Override
-        public Cursor toOptional(String firstNeedle, String... reamainingNeedles) throws Ex { return this; }
+        public Cursor toOptional(String firstNeedle, String... reamainingNeedles) throws Ex {
+            return this;
+        }
 
         @Override
-        public Cursor to(int position, String tagName) throws MissingNode { return this; }
+        public Cursor to(int position, String tagName) throws MissingNode {
+            return this;
+        }
 
         @Override
-        public int count(String tagName) { return 0; }
+        public int count(String tagName) {
+            return 0;
+        }
 
         @Override
         public void iterateCollection(String needle, Iterator extractor) throws Ex { /* ...*/ }
 
         @Override
-        public <R> R extract(Extractor<R> extractor) throws Ex { return null; }
+        public <R> R extract(Extractor<R> extractor) throws Ex {
+            return null;
+        }
 
         @Override
-        public <R> R extract(Class<R> type) throws Ex { return null; }
+        public <R> R extract(Class<R> type) throws Ex {
+            return null;
+        }
 
         @Override
         public <R> List<R> extractCollection(String needle, Class<R> type) throws Ex {
@@ -395,13 +411,19 @@ public class NX {
         }
 
         @Override
-        public String text() { return null; }
+        public String text() {
+            return null;
+        }
 
         @Override
-        public String name() { return null; }
+        public String name() {
+            return null;
+        }
 
         @Override
-        public Cursor text(String updatedText) { return this; }
+        public Cursor text(String updatedText) {
+            return this;
+        }
 
         @Override
         public String describePath() {
@@ -409,7 +431,8 @@ public class NX {
         }
 
         @Override
-        public void removeAttr(String name) throws Ex { }
+        public void removeAttr(String name) throws Ex {
+        }
 
 
         @Override
@@ -433,6 +456,11 @@ public class NX {
         }
 
         @Override
+        public Cursor appendAfter(String nodeName, Predicate<Cursor> predicate) throws Ex {
+            throw new UnsupportedOperationException("Can't insert child node under empty cursor");
+        }
+
+        @Override
         public Attribute attr(String name) {
             return new NullAttribute();
         }
@@ -443,13 +471,16 @@ public class NX {
         }
 
         @Override
-        public <R> void insertCollection(String prototype, Iterable<R> people, Inserter<R> inserter) throws Ex { }
+        public <R> void insertCollection(String prototype, Iterable<R> people, Inserter<R> inserter) throws Ex {
+        }
 
         @Override
-        public <R> void update(R payload, Inserter<R> inserter) {  }
+        public <R> void update(R payload, Inserter<R> inserter) {
+        }
 
         @Override
-        public void remove() throws Ex { }
+        public void remove() throws Ex {
+        }
 
         @Override
         public boolean hasAttr(String attributeName) {
@@ -518,11 +549,29 @@ public class NX {
         }
 
         @Override
+        public Cursor appendAfter(String tagName, Predicate<Cursor> predicate) throws Ex {
+            NodeCursor match = findNode(predicate);
+
+            if (match == null) {
+                return append(tagName);
+            } else {
+                Element element = document.createElement(tagName);
+                Node nextSibling = match.node.getNextSibling();
+                node.insertBefore(element, nextSibling);
+
+                List<NodeCursor> ancestors = Lists.newArrayList(this.ancestors);
+                ancestors.add(this);
+
+                return new NodeCursor(document, ancestors, element, 0);
+            }
+        }
+
+        @Override
         public Cursor toOptional(String firstNeedle, String... remainingNeedles) throws Ex {
             Optional<Node> result = findSingleNode(firstNeedle);
             Cursor cursor = result.isPresent()
-                    ? to(firstNeedle)
-                    : new EmptyCursor(this);
+                ? to(firstNeedle)
+                : new EmptyCursor(this);
 
             for (String remainingNeedle : remainingNeedles) {
                 cursor = cursor.toOptional(remainingNeedle);
@@ -542,8 +591,7 @@ public class NX {
             if (found.isPresent()) {
                 final List<NodeCursor> newAncestorList = newAncestorList();
                 return new NodeCursor(document, newAncestorList, found.get(), 0);
-            }
-            else {
+            } else {
                 throw new MissingNode(this, tagName, node.getChildNodes());
             }
         }
@@ -558,8 +606,7 @@ public class NX {
                 if (isNamed(childNode, tagName)) {
                     if (found != null) {
                         throw new Ambiguous(this, tagName);
-                    }
-                    else {
+                    } else {
                         found = childNode;
                     }
                 }
@@ -640,8 +687,7 @@ public class NX {
 
             if (extractor == null) {
                 throw new NoExtractor(this, type);
-            }
-            else {
+            } else {
                 return extractor;
             }
         }
@@ -699,8 +745,7 @@ public class NX {
                 }
 
                 node.removeChild(originalPrototype);
-            }
-            else {
+            } else {
                 throw new MissingNode(this, "Expected a node named " + prototypeName + " to be used as a prototype");
             }
         }
@@ -716,8 +761,7 @@ public class NX {
 
             if (attribute.isPresent()) {
                 return new RealAttribute(attribute.get());
-            }
-            else {
+            } else {
                 throw new MissingAttribute(this, needle);
             }
         }
@@ -728,8 +772,7 @@ public class NX {
 
             if (attribute.isPresent()) {
                 return new RealAttribute(attribute.get());
-            }
-            else {
+            } else {
                 return new NullAttribute();
             }
         }
@@ -746,8 +789,18 @@ public class NX {
 
         @Override
         public Cursor require(Predicate<Cursor> predicate) throws Ex {
+            Cursor match = findNode(predicate);
+
+            if (match == null) {
+                throw new MissingNode(this, "predicate");
+            } else {
+                return match;
+            }
+        }
+
+        private NodeCursor findNode(Predicate<Cursor> predicate) {
             final NodeList childNodes = node.getChildNodes();
-            Cursor match = null;
+            NodeCursor match = null;
 
             int count = 0;
             for (int i = 0; i < childNodes.getLength(); i++) {
@@ -760,7 +813,7 @@ public class NX {
 
                 if (name != null) {
                     final List<NodeCursor> newAncestorList = newAncestorList();
-                    final Cursor cursor = new NodeCursor(document, newAncestorList, childNode, count++);
+                    final NodeCursor cursor = new NodeCursor(document, newAncestorList, childNode, count++);
 
                     if (predicate.test(cursor)) {
                         if (match != null) {
@@ -772,18 +825,13 @@ public class NX {
                 }
             }
 
-            if (match == null) {
-                throw new MissingNode(this, "predicate");
-            }
-            else {
-                return match;
-            }
+            return match;
         }
 
         private Optional<Node> findAttribute(String needle) throws Ambiguous {
             NamedNodeMap attributes = node.getAttributes();
 
-            for (int i=0; i<attributes.getLength(); i++) {
+            for (int i = 0; i < attributes.getLength(); i++) {
                 final Node attribute = attributes.item(i);
 
                 if (isNamed(attribute, needle)) {
@@ -819,8 +867,8 @@ public class NX {
 
                 if (ancestor.index > 0) {
                     builder.append("[")
-                            .append(ancestor.index)
-                            .append("]");
+                        .append(ancestor.index)
+                        .append("]");
                 }
 
                 builder.append(" >> ");
@@ -830,8 +878,8 @@ public class NX {
 
             if (index > 0) {
                 builder.append("[")
-                        .append(index)
-                        .append("]");
+                    .append(index)
+                    .append("]");
             }
 
             return builder.toString();
@@ -863,8 +911,7 @@ public class NX {
 
                 StreamResult result = new StreamResult(output);
                 transformer.transform(new DOMSource(node), result);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 throw new Ex(this, "Technical difficulties", ex);
             }
         }
@@ -919,7 +966,7 @@ public class NX {
 
         private static String summarize(NodeList childNodes) {
             final Set<String> names = Sets.newTreeSet();
-            for (int i=0; i<childNodes.getLength(); i++) {
+            for (int i = 0; i < childNodes.getLength(); i++) {
                 final Node item = childNodes.item(i);
                 String name = item.getLocalName();
 
@@ -933,8 +980,8 @@ public class NX {
             }
 
             return Joiner.on(", ")
-                    .skipNulls()
-                    .join(names);
+                .skipNulls()
+                .join(names);
         }
     }
 
@@ -942,6 +989,7 @@ public class NX {
         Ambiguous(Cursor cursor, String needle) {
             super(cursor, "Expected to find a single instance of " + needle);
         }
+
         Ambiguous(Cursor cursor) {
             super(cursor, "Predicate matched more then one child node");
         }
@@ -977,9 +1025,7 @@ public class NX {
                     }
                 }
             }
-        }
-
-        ;
+        };
 
         abstract void applyTo(Transformer t, Document document);
 

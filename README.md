@@ -46,13 +46,6 @@ Have a look at the [test cases](https://github.com/kimble/nmxmlp/tree/master/src
         assertEquals("Mikke Mus", reloaded.to("name").text());
     }
 
-Repository
-----------
-The latest build is published to Bintray / JCenter. Oh, btw, all the code is implemented as a
-single [.java](https://github.com/kimble/nmxmlp/blob/master/src/main/java/com/developerb/nmxmlp/NX.java)
-file so depending on your project you might consider just copy'n'pasting the whole thing.
-
-[![Download](https://api.bintray.com/packages/kim-betti/maven/nmxmlp/images/download.png) ](https://bintray.com/kim-betti/maven/nmxmlp/_latestVersion)
 
 
 Use cases
@@ -95,5 +88,4 @@ simple services to expose.
 
 Roadmap 2.0
 -----------
-1. Drop Guava
-2. Make use of Java 8 classes / interfaces
+I would like to drop Guava and write it in Kotlin. 

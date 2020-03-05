@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.developerb.nmxmlp.NX.Feature.DUMP_WITHOUT_XML_DECLARATION;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,9 +31,9 @@ class DataInsertTest extends AbstractNXTest {
     void insertCollectionNoNamespaces() throws NX.Ex {
         NX.Cursor peopleCursor = parse("<people><person name='Prototype' /></people>");
 
-        List<Person> people = Arrays.asList (
-                new Person("Nasse Nøff"),
-                new Person("Donald Duck")
+        List<Person> people = Arrays.asList(
+            new Person("Nasse Nøff"),
+            new Person("Donald Duck")
         );
 
         peopleCursor.insertCollection("person", people, new PersonInserter());
@@ -49,7 +50,7 @@ class DataInsertTest extends AbstractNXTest {
         NX.Cursor cursor = parseResource("svg/simple-svg.xhtml");
         NX.Cursor svg = cursor.to("body").to("svg");
 
-        List<Circle> circles = Arrays.asList (
+        List<Circle> circles = Arrays.asList(
             new Circle("red", 100, 100, 20),
             new Circle("red", 50, 50, 25),
             new Circle("red", 70, 120, 30)
@@ -58,10 +59,10 @@ class DataInsertTest extends AbstractNXTest {
         svg.insertCollection("circle", circles, new CircleInserter());
 
         assertThat(cursor.dumpXml(UTF_8))
-                .as("XML output")
-                .contains("<svg:circle cx=\"100\" cy=\"100\" fill=\"red\" r=\"20\"/>")
-                .contains("<svg:circle cx=\"50\" cy=\"50\" fill=\"red\" r=\"25\"/>")
-                .contains("<svg:circle cx=\"70\" cy=\"120\" fill=\"red\" r=\"30\"/>");
+            .as("XML output")
+            .contains("<svg:circle cx=\"100\" cy=\"100\" fill=\"red\" r=\"20\"/>")
+            .contains("<svg:circle cx=\"50\" cy=\"50\" fill=\"red\" r=\"25\"/>")
+            .contains("<svg:circle cx=\"70\" cy=\"120\" fill=\"red\" r=\"30\"/>");
     }
 
     @Test
@@ -98,12 +99,43 @@ class DataInsertTest extends AbstractNXTest {
             peopleCursor.insertCollection("pirate", pirates, (cursor, input) -> {
                 // Doesnt matter
             });
-        }
-        catch (NX.MissingNode expected) {
+        } catch (NX.MissingNode expected) {
             assertThat(expected)
-                    .as("Expected exception")
-                    .hasMessage("people -- Unable to find 'Expected a node named pirate to be used as a prototype'");
+                .as("Expected exception")
+                .hasMessage("people -- Unable to find 'Expected a node named pirate to be used as a prototype'");
         }
+    }
+
+    @Test
+    void insertAfter() {
+        NX.Cursor cursor = parse("<root><a /><c /></root>");
+        cursor.appendAfter("b", (c) -> c.name().equals("a"));
+
+
+        String expectedXml = "<root><a/><b/><c/></root>";
+        assertEquals(expectedXml, cursor.dumpXml(UTF_8, DUMP_WITHOUT_XML_DECLARATION));
+    }
+
+    @Test
+    void insertAfterNoMatch() {
+        NX.Cursor cursor = parse("<root><a /><c /></root>");
+        cursor.appendAfter("b", (c) -> c.name().equals("no-such-node"));
+
+
+        String expectedXml = "<root><a/><c/><b/></root>";
+        assertEquals(expectedXml, cursor.dumpXml(UTF_8, DUMP_WITHOUT_XML_DECLARATION));
+    }
+
+
+    @Test
+    void appendChildToInsertedNode() {
+        NX.Cursor cursor = parse("<root><a /><c /></root>");
+        NX.Cursor newCursor = cursor.appendAfter("b", (c) -> c.name().equals("c"));
+
+        newCursor.append("child").text("Hello");
+
+        String expectedXml = "<root><a/><c/><b><child>Hello</child></b></root>";
+        assertEquals(expectedXml, cursor.dumpXml(UTF_8, DUMP_WITHOUT_XML_DECLARATION));
     }
 
 
