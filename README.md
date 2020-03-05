@@ -1,6 +1,8 @@
 No more xml please! (nmxmlp)
 ============================
 
+![Java CI](https://github.com/kimble/nmxmlp/workflows/Java%20CI/badge.svg?branch=master)
+
 This mini project was born out of a frustrated hate of XML, JAXB, XJC, bindings, namespaces, code generation, xpath factories
 and the ironically named SimpleNamespaceContext class. Not to mention all the possible ways these technologies makes it 
 insanely difficult and time consuming to debug problems... 
@@ -11,7 +13,6 @@ way to extract and updated data in small-ish XML documents. Not too much to ask 
 libraries seems to be able to do this in a convenient, reliable and straight forward way so I created this very non-enterprisy
 API doing just that.
 
-[ ![Download](https://api.bintray.com/packages/kim-betti/maven/nmxmlp/images/download.svg?version=1.2.0) ](https://bintray.com/kim-betti/maven/nmxmlp/1.2.0/link)
 
 
 Design goals - In order of importance
@@ -19,7 +20,6 @@ Design goals - In order of importance
 1. Provide a convenient API to extract and update data in small-ish XML documents.
 2. Don't depend on any external XML APIs.
 
-[![endorse](https://api.coderwall.com/kimble/endorsecount.png)](https://coderwall.com/kimble)
 
 Non goals and constraints
 -------------------------
