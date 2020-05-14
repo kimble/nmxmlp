@@ -19,6 +19,7 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.Resources;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.io.IOException;
 import java.net.URL;
 
 
@@ -36,6 +37,7 @@ public abstract class AbstractNXTest {
         // A good place for tests to add extractors etc.
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     protected NX.Cursor parseResource(String resourceName) {
         URL svgResource = Resources.getResource(resourceName);
         ByteSource svgByteSource = Resources.asByteSource(svgResource);
@@ -48,7 +50,11 @@ public abstract class AbstractNXTest {
     }
 
     protected NX.Cursor parse(ByteSource source) {
-        return nx.from(source, new NX.ReadContext(null));
+        try {
+            return nx.from(source.openStream(), new NX.ReadContext(null));
+        } catch (IOException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 
 }

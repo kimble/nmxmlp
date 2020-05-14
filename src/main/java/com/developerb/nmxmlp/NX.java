@@ -15,7 +15,6 @@
  */
 package com.developerb.nmxmlp;
 
-import com.google.common.io.ByteSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
@@ -97,22 +96,7 @@ public class NX {
     }
 
     public Cursor from(final String xml, ReadContext context) throws Ex {
-        return from(new ByteSource() {
-
-            @Override
-            public InputStream openStream() {
-                return new ByteArrayInputStream(xml.getBytes());
-            }
-
-        }, context);
-    }
-
-    public Cursor from(ByteSource source, ReadContext context) throws Ex {
-        try {
-            return from(source.openStream(), context);
-        } catch (Exception ex) {
-            throw new Ex("Failed to initialize xml cursor", ex);
-        }
+        return from(new ByteArrayInputStream(xml.getBytes()), context);
     }
 
     public Cursor from(InputStream stream, ReadContext context) throws Ex {

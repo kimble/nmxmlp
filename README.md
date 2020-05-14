@@ -88,4 +88,4 @@ simple services to expose.
 
 Roadmap 2.0
 -----------
-I would like to drop Guava and write it in Kotlin. 
+Perhaps I'll write it in Kotlin. 

@@ -18,8 +18,6 @@ package com.developerb.nmxmlp;
 import com.google.common.io.ByteSource;
 import org.junit.jupiter.api.Test;
 
-import java.io.InputStream;
-
 import static com.google.common.base.Charsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,11 +32,10 @@ class XmlLoadingTest extends AbstractNXTest {
             parse("<root><unclosedTag></root>");
 
             fail("Should not have accepted invalid xml");
-        }
-        catch (NX.Ex ex) {
+        } catch (NX.Ex ex) {
             assertThat(ex)
-                    .as("Expected exception")
-                    .hasMessage("Failed to initialize xml cursor");
+                .as("Expected exception")
+                .hasMessage("Failed to initialize xml cursor");
         }
     }
 
@@ -48,11 +45,10 @@ class XmlLoadingTest extends AbstractNXTest {
             parse(ByteSource.wrap("<root><unclosedTag></root>".getBytes(UTF_8)));
 
             fail("Should not have accepted invalid xml");
-        }
-        catch (NX.Ex ex) {
+        } catch (NX.Ex ex) {
             assertThat(ex)
-                    .as("Expected exception")
-                    .hasMessage("Failed to initialize xml cursor");
+                .as("Expected exception")
+                .hasMessage("Failed to initialize xml cursor");
         }
     }
 
@@ -60,11 +56,10 @@ class XmlLoadingTest extends AbstractNXTest {
     void readingNodeWithDuplicateAttributeTriggersException() {
         try {
             parse("<people><person name='First' name='Second' /></people>");
-        }
-        catch (NX.Ex ex) {
+        } catch (NX.Ex ex) {
             assertThat(ex.getCause().getCause())
-                    .as("Expected exception")
-                    .hasMessageContaining("Attribute \"name\" was already specified for element \"person\"");
+                .as("Expected exception")
+                .hasMessageContaining("Attribute \"name\" was already specified for element \"person\"");
         }
     }
 
@@ -74,30 +69,6 @@ class XmlLoadingTest extends AbstractNXTest {
 
         assertNotNull(cursor);
         assertEquals("root", cursor.name());
-    }
-
-    @Test
-    void failingToReadFromByteSource() {
-        try {
-            parse(new ByteSource() {
-
-                @Override
-                public InputStream openStream() {
-                    throw new IllegalStateException("Oups...");
-                }
-
-            });
-        }
-        catch (NX.Ex ex) {
-            assertThat(ex)
-                    .as("Expected exception")
-                    .hasMessage("Failed to initialize xml cursor");
-
-            assertThat(ex.getCause())
-                    .as("Cause of the expected exception")
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessage("Oups...");
-        }
     }
 
 }
