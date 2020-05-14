@@ -20,7 +20,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteSource;
-import com.google.common.io.Closeables;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
@@ -40,6 +39,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -149,7 +149,10 @@ public class NX {
         } catch (Exception ex) {
             throw new Ex("Failed to initialize xml cursor", ex);
         } finally {
-            Closeables.closeQuietly(stream);
+            try {
+                stream.close();
+            } catch (IOException ignored) {
+            }
         }
     }
 
