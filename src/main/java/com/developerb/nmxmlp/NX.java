@@ -16,7 +16,6 @@
 package com.developerb.nmxmlp;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -155,19 +154,19 @@ public class NX {
     }
 
 
-    public static interface Extractor<R> {
+    public interface Extractor<R> {
 
         R transform(Cursor cursor) throws Ex;
 
     }
 
-    public static interface Iterator {
+    public interface Iterator {
 
         void on(Cursor cursor) throws Ex;
 
     }
 
-    public static interface Inserter<R> {
+    public interface Inserter<R> {
 
         void insert(Cursor cursor, R input) throws Ex;
 
@@ -522,9 +521,15 @@ public class NX {
         }
 
         NodeCursor(Document document, List<NodeCursor> ancestors, Node node, int index) {
-            Preconditions.checkNotNull(ancestors, "Ancestors can't be null");
-            Preconditions.checkArgument(index >= 0, "Index must be greater or equal to zero");
-            Preconditions.checkNotNull(node, "Node can't be null");
+            if (ancestors == null) {
+                throw new IllegalArgumentException("Ancestors can't be null");
+            }
+            if (node == null) {
+                throw new IllegalArgumentException("Node can't be null");
+            }
+            if (index < 0) {
+                throw new IllegalArgumentException("Index must be greater or equal to zero");
+            }
 
             this.document = document;
             this.ancestors = ancestors;
