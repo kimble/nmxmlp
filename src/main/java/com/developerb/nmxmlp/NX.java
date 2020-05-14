@@ -17,14 +17,18 @@ package com.developerb.nmxmlp;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteSource;
 import com.google.common.io.Closeables;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentType;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
@@ -41,10 +45,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 
-import static javax.xml.transform.OutputKeys.*;
+import static javax.xml.transform.OutputKeys.INDENT;
+import static javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION;
 
 /**
  * No more xml please!
@@ -612,7 +622,7 @@ public class NX {
                 }
             }
 
-            return Optional.fromNullable(found);
+            return Optional.ofNullable(found);
         }
 
         private boolean isNamed(Node childNode, String needle) {
@@ -839,7 +849,7 @@ public class NX {
                 }
             }
 
-            return Optional.absent();
+            return Optional.empty();
         }
 
         @Override
@@ -860,7 +870,7 @@ public class NX {
 
         @Override
         public String describePath() {
-            StringBuilder builder = new StringBuilder("");
+            StringBuilder builder = new StringBuilder();
 
             for (NodeCursor ancestor : ancestors) {
                 builder.append(ancestor.name());
