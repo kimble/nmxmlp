@@ -15,7 +15,6 @@
  */
 package com.developerb.nmxmlp;
 
-import com.google.common.base.Joiner;
 import com.google.common.io.ByteSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
@@ -47,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -969,6 +969,8 @@ public class NX {
     }
 
     public static class MissingNode extends Ex {
+
+
         MissingNode(Cursor cursor, String needle, int position, NodeList childNodes) {
             super(cursor, "Unable to find '" + needle + "' with index " + position + " - Did you mean: " + summarize(childNodes) + "?");
         }
@@ -996,9 +998,15 @@ public class NX {
                 }
             }
 
-            return Joiner.on(", ")
-                .skipNulls()
-                .join(names);
+            StringJoiner joiner = new StringJoiner(", ");
+
+            for (String name : names) {
+                if (name != null) {
+                    joiner.add(name);
+                }
+            }
+
+            return joiner.toString();
         }
     }
 
