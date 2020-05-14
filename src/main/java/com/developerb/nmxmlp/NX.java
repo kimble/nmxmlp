@@ -232,6 +232,8 @@ public class NX {
 
         void remove() throws Ex;
 
+        void removeChildren(Predicate<Cursor> predicate) throws Ex;
+
         String text();
 
         String describePath();
@@ -272,7 +274,7 @@ public class NX {
         <R> void update(R payload, Inserter<R> inserter) throws Ex;
 
         /**
-         * @param attributeName
+         * @param attributeName Name of the attribute
          * @return True if the node has an attribute with the given name
          */
         boolean hasAttr(String attributeName);
@@ -478,6 +480,9 @@ public class NX {
         }
 
         @Override
+        public void removeChildren(Predicate<Cursor> predicate) throws Ex { }
+
+        @Override
         public boolean hasAttr(String attributeName) {
             return false;
         }
@@ -668,6 +673,25 @@ public class NX {
         @Override
         public void remove() throws Ex {
             node.getParentNode().removeChild(node);
+        }
+
+        @Override
+        public void removeChildren(Predicate<Cursor> predicate) throws Ex {
+            NodeList childNodes = node.getChildNodes();
+            List<Cursor> toBeRemoved = new ArrayList<>();
+
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                Node childNode = childNodes.item(i);
+                Cursor cursor = new NodeCursor(document, ancestors, childNode, i);
+
+                if (predicate.test(cursor)) {
+                    toBeRemoved.add(cursor);
+                }
+            }
+
+            for (Cursor cursor : toBeRemoved) {
+                cursor.remove();
+            }
         }
 
         @Override

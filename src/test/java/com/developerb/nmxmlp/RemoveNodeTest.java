@@ -24,4 +24,12 @@ class RemoveNodeTest extends AbstractNXTest {
         cursor.toOptional("no-such-node").remove();
     }
 
+    @Test
+    void removeUsingPredicate() {
+        NX.Cursor cursor = parse("<root><aa>a</aa><ab>ab</ab><ba>ba</ba></root>");
+        cursor.removeChildren((c) -> c.name().startsWith("a"));
+
+        assertEquals("<root><ba>ba</ba></root>", cursor.dumpXml(UTF_8, NX.Feature.DUMP_WITHOUT_XML_DECLARATION));
+    }
+
 }
