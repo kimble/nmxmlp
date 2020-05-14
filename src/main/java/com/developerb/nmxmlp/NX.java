@@ -16,9 +16,6 @@
 package com.developerb.nmxmlp;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.common.io.ByteSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
@@ -45,10 +42,12 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -64,7 +63,7 @@ public class NX {
 
     private final DocumentBuilderFactory docBuilderFactory;
     private final TransformerFactory transformerFactory;
-    private final Map<Class<?>, Extractor<?>> extractors = Maps.newHashMap();
+    private final Map<Class<?>, Extractor<?>> extractors = new HashMap<>();
 
     public NX() {
         this(Collections.emptySet());
@@ -414,12 +413,12 @@ public class NX {
 
         @Override
         public <R> List<R> extractCollection(String needle, Class<R> type) throws Ex {
-            return Lists.newArrayList();
+            return new ArrayList<>();
         }
 
         @Override
         public <R> List<R> extractCollection(String needle, Extractor<R> extractor) throws Ex {
-            return Lists.newArrayList();
+            return new ArrayList<>();
         }
 
         @Override
@@ -560,7 +559,7 @@ public class NX {
             Element element = document.createElement(tagName);
             Node newNode = node.appendChild(element);
 
-            List<NodeCursor> ancestors = Lists.newArrayList(this.ancestors);
+            List<NodeCursor> ancestors = new ArrayList<>(this.ancestors);
             ancestors.add(this);
 
             return new NodeCursor(document, ancestors, newNode, 0);
@@ -577,7 +576,7 @@ public class NX {
                 Node nextSibling = match.node.getNextSibling();
                 node.insertBefore(element, nextSibling);
 
-                List<NodeCursor> ancestors = Lists.newArrayList(this.ancestors);
+                List<NodeCursor> ancestors = new ArrayList<>(this.ancestors);
                 ancestors.add(this);
 
                 return new NodeCursor(document, ancestors, element, 0);
@@ -661,7 +660,7 @@ public class NX {
         }
 
         private List<NodeCursor> newAncestorList() {
-            final List<NodeCursor> newAncestorList = Lists.newArrayList(ancestors);
+            final List<NodeCursor> newAncestorList = new ArrayList<>(ancestors);
             newAncestorList.add(this);
 
             return newAncestorList;
@@ -718,7 +717,7 @@ public class NX {
 
         @Override
         public <R> List<R> extractCollection(String needle, final Extractor<R> extractor) throws Ex {
-            final List<R> result = Lists.newArrayList();
+            final List<R> result = new ArrayList<>();
 
             iterateCollection(needle, cursor -> {
                 final R converted = cursor.extract(extractor);
@@ -983,7 +982,7 @@ public class NX {
         }
 
         private static String summarize(NodeList childNodes) {
-            final Set<String> names = Sets.newTreeSet();
+            final Set<String> names = new TreeSet<>();
             for (int i = 0; i < childNodes.getLength(); i++) {
                 final Node item = childNodes.item(i);
                 String name = item.getLocalName();
